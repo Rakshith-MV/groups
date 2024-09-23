@@ -96,7 +96,7 @@ class modulo:
         #USING MULTIPLE ElEMENTS AS GENERATORS
         # =======================================
         
-
+        # use sylow-p-subgroups method
 
         # CENTER OF A GROUP, CENTROID OF A GROUP, 
 

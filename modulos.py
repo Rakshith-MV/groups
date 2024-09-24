@@ -1,5 +1,7 @@
 from functools import cache, wraps
 from Decorators import unitary
+from tabulate import tabulate
+import numpy as np
 
 
 @cache
@@ -27,22 +29,48 @@ class members:
 
     def order_cycles(self
                      )->None:
-        temp =  k  = self.element
+        k  = self.element
         count = 1
         self.string = ""
         self.order = 1
-        if k == 0:
-            return
 
-        while(str(k) not in self.string):
-            if k == id:
+        while(str(self.element) not in self.string ):
+            if self.element == 0:
+                print(self.string)
+            inverse = k
+            if k == self.id:
                 self.order = count
-                self.inverse = temp
-            self.string += str(k)
-            temp = k
+                self.inverse = inverse
+            
             k = self.op(k,self.element,self.group_order)
+            self.string += str(k)
             count+=1
+        self.string = self.string[-1]+self.string[:-1]
 
+    def __pow__(self,
+                n:int
+                )->int:
+        temp = self.id
+        for i in range(n):
+            temp = self.op(temp,self.element,self.group_order)
+        return temp
+
+    def __int__(self
+                )->int:
+        return self.element
+    
+    def __add__(self,
+                i
+                ):  
+        return (self.element+i.element)%self.group_order
+    
+    def __mul__(self,
+                i:int
+                ):
+        return members((self.element*i)%self.group_order,self.group_order,self.id, self.op)
+
+    def __str__(self) -> str:
+        return str(self.element)
 @cache
 class modulo:
     """
@@ -60,7 +88,7 @@ class modulo:
     """
     def __init__(self,
                  n:int,
-                 operation:chr,
+                 operation:chr="+",
                  ) -> None:
         if operation == "*":
             self.id = 1
@@ -74,15 +102,13 @@ class modulo:
 
     def cayleys(self
                 )->None:
-        print( "  | " , end= '')
-        for i in self.elements:
-            print(i.element , end="  |  " )
-        print('\n',len(self.elements)*'------')    
-        for i in self.elements:
-            print(i.element,end =" | ")
-            for j in self.elements:
-                print(self.op(int(i.element),int(j.element),self.noch),end="  |  ")
-            print()
+        if self.id == 0:
+            table = [[ int(i) for i in self._cycles(e)] for e in range(len(self.elements))]
+            self.matrix = np.matrix(table)
+            print(tabulate([[str(i)+"  ", *table[i]] for i in range(len(self.elements))],["# ",*list(range(len(self.elements)))],"grid"))
+        else:
+            table = [[ i.__str__() for i in self._cycles(int(e))] for e in  self.elements]
+            print(tabulate([[str(i)+"  ", *table[i]] for i in self.elements],["# ",*self.elements],"grid"))
 
     def subgroups(self,    
                   )->set:
@@ -96,21 +122,32 @@ class modulo:
         #USING MULTIPLE ElEMENTS AS GENERATORS
         # =======================================
         
-        # use sylow-p-subgroups method
+
 
         # CENTER OF A GROUP, CENTROID OF A GROUP, 
 
 
         # 
+    def generators(self
+                   ):
+        if self.id == 0:
+            return [i.element for i in self.elements if len(i.string) == self.noch]
+        return [ i.element for i in self.elements]
 
     @cache
     def _cycles(self,
-                i
+                i:int
                 )->set:
-        temp = ()
-        for e in self.elements:
-            temp.add(self.op(i,e))
-        return temp
+
+        if self.id == 0:
+            temp = [self.elements[e+self.elements[i]] for e in self.elements]
+            return temp
+        else:
+            temp = [e*i for e in self.elements]
+            return temp
+        
+    def __sizeof__(self) -> int:
+        self.noch
 
     def __getitem__(self,
                     n:int):
@@ -121,6 +158,5 @@ class modulo:
         for i in self.elements:
             s+=str(i.element)+', '
         return s.rstrip(',')
+    
 
-if __name__ == "__main__":
-    a = modulo(69,"+")

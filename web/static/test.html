@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
+    <script src="graphs.js"></script>
+
+</head>
+<body>
+    <div id="graph-container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            stupid_animate();
+        });
+    </script>
+    <!-- <div id='graph-container'> stupid_animate() </div> -->
+    <!-- <button id="showGraphsButton">Show Graphs</button>
+    <div id="graph-container" style="display: none;"></div>
+    <button id="showEmptyScreenButton"> table</button>
+    <div id="empty-screen-container" style="background-color: black;"></div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('showGraphsButton').addEventListener('click', function() {
+                if (!window.graphGenerated) {
+                    document.getElementById('graph-container').style.display = 'block';
+                    stupid_animate();
+                    window.graphGenerated = true;
+                } else {
+                    document.getElementById('graph-container').display = 'none';
+                    // document.getElementById('graph-container').innerHTML = '';
+            });
+
+            document.getElementById('showEmptyScreenButton').addEventListener('click', function() {
+            });
+        });
+    </script>     -->
+
+</body>
+</html>

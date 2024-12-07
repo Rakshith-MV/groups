@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resizable Containers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='integerm.css') }}">
+</head>
+<body>
+    <div class="container-fluid" style="height: 100vh; display: flex;">
+        <div class="left" style="flex: 0 0 30%;">
+            <form method="POST">
+                {{ form.operation }} {{ form.mod_num }}
+                {{ form.submit }}
+            </form>
+        </div>
+
+    <div class="divider"></div> <!-- Divider for resizing -->
+
+        <div class="right" id="rightSection" style="flex: 1;">
+            <h1 align="center">
+                Z<sub> {{ data[1] }}</sub><sup>{{ data[0] }}</sup>
+            </h1>  
+            <button id="switchViewButton" class="switch" onclick="toggleView()">Switch Animation</button> <!-- New button for switching views -->
+            <div id="tableView">
+                {% if data[1] != 0 %}
+                    <table style="margin-left: auto; margin-right: auto;"> 
+                        {% for row in details.cayleys %}
+                        <tr>
+                            {% for element in row %}
+                            <td>
+                                <button class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__()  }} ', '{{ element.order }}')">
+                                    {{ element.__str__() }}       
+                                </button>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+            <div id="animationView" style="display: none;"> <!-- New div for animation view -->
+                <canvas id="animationCanvas" width="600" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='integerm.js') }}"></script>
+    <div id="infoCard" class="card" style="display: none; position: absolute; z-index: 1000;">
+        <div class="card-body">
+            This is the information card content.
+        </div>
+    </div>
+</body>
+</html>

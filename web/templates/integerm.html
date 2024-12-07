@@ -1,0 +1,74 @@
+
+{% extends "groups_base.html" %}
+{% block header %}
+<title>Integer Groups</title>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
+<script src="{{ url_for('static', filename='/integerm.js') }}"></script>
+<script src="{{ url_for('static', filename='/graphs.js') }}"></script>
+
+
+
+{% endblock %}
+
+
+{% block left_side %}
+<form method="POST">
+    {{ form.operation }} {{ form.mod_num }}
+    {{ form.submit }}
+    {{ form.graph }}
+    {{ form.switch }}
+</form>
+ 
+{% endblock %}
+
+
+{% block right_side %}
+    <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
+        <h1 align="center">
+            Z<sub> {{ data[1] }}</sub><sup>{{ data[0] }}</sup>
+        </h1>  
+
+        {% if form.graph.data == 'table'  %}
+        <div id="tableView">
+            {% if data[1] != 0 %}
+                <table style="margin-left: auto; margin-right: auto;"> 
+                    {% for row in details.cayleys %}
+                    <tr>
+                        {% for element in row %}
+                        <td>    
+                            <button
+                             style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                                {{ element.__str__() }}       
+                            </button>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+        {% else %}
+        <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('graph-container');
+                const rect = container.getBoundingClientRect(); 
+                stupid_animate(
+                    rect.width,
+                    rect.height,
+                    container,  // Pass the container element instead of coordinates
+                    details[2],
+                    details[3]          // 'graph-container',
+                );
+            });
+        </script>
+        {% endif %}
+    </div>
+{% endblock %}
+
+,

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='integerm.css') }}">
+    
+    <!-- jQuery and Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="left">
+
+            <a href="{{ url_for('home') }}"><h1 class="main">Groups</h1></a>
+            {% block left_side %}
+            {% endblock %}
+
+        </div>
+        <div class="divider"></div>
+        <div class="right" id="rightSection" style="flex: 1;">
+
+            {% block right_side %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

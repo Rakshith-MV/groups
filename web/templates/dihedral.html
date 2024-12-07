@@ -1,0 +1,45 @@
+{% extends "groups_base.html" %}
+{% block header %}
+<title>Dihedral Groups</title>
+{% endblock %}
+
+
+{% block left_side %}
+<form method="POST">
+     {{ form.number }}
+    {{ form.submit }}
+</form>
+
+{% endblock %}
+
+
+{% block right_side %}
+    <h1 align="center">
+        D<sub> {{ data[0] }}</sub>
+    </h1>  
+    <button id="switchViewButton" class="switch" onclick="toggleView()">Switch Animation</button>
+    <div id="tableView">
+        {% if data[1] != 0 %}
+            <table style="margin-left: auto; margin-right: auto;"> 
+                {% for row in details.cayleys %}
+                <tr>
+                    {% for element in row %}
+                    <td>
+                        <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                            {% if element.f == 1%}
+                                fr<sup> {{ element.r }}</sup>       
+                            {% else %}
+                                r<sup> {{ element.r }}</sup>
+                            {% endif %}
+                        </button>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+

@@ -1,0 +1,217 @@
+.body{
+    margin: 0;
+    padding: 0;
+}
+
+
+
+.left{
+    background-color: #1DA1F2;
+    display: inline-flexbox;
+    width: 20%;
+    height: 100%;
+    overflow: auto;
+    flex-shrink: 0;
+    flex: 0 0 30%;
+    padding: 20px;
+}
+
+.right{
+    background-color:#f7dada;
+    display: inline-flexbox;
+    width: 70%;
+    height: 100%;
+    overflow: auto;
+    flex-shrink: 0;
+    flex: 1;
+    padding: 20px;
+}
+
+.divider{
+    width: 5px;
+    background-color: #ccc;
+    cursor: col-resize;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+}
+
+.divider:hover{
+    background-color: white;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.container-fluid {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+}
+
+
+/* Styles for the divider */
+.divider {
+    width: 5px; /* Width of the divider */
+    background-color: #ccc; /* Color of the divider */
+    cursor: col-resize; /* Cursor style when hovering over the divider */
+}
+
+.element{
+    border: none;
+    height: 50px;
+    width: 50px;
+    border-radius: none;
+    color: black;
+    font-size: 15px;
+}
+
+.element:hover{
+    transform: scale(1.2);
+    transition: all 0.5s;
+    background-color: white;
+    font-size: 16px;
+    font-weight: bolder;
+}
+
+.switch{
+    height: max-content;
+    border: none;
+    border-radius: 5px;
+    font-size: 17px;
+    color: white;
+    text-align: center;
+    background-color: #1DA1F2;
+}
+.switch:hover{
+    transition: all 0.1s;
+    transform: scale(1.05);
+}
+
+.card {
+    border-radius: 6px;
+    border: none;
+    height: max-content;
+    width: max-content;
+    font-size: larger;
+    background-color: rgb(240, 213, 213); 
+}
+
+.main{
+    background-color: #1DA1F2;
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-style: oblique;
+    margin-bottom: 20px;
+    font-size: 30px;
+}
+
+.main:hover{
+    cursor: pointer;
+}
+
+.info-card {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.info-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #666;
+}
+
+.info-value {
+    color: #333;
+}
+
+.toggle-view-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 100;
+    transition: background-color 0.3s;
+    display: block !important;
+    visibility: visible !important;
+    z-index: 1000;
+}
+
+.toggle-view-btn:hover {
+    background-color: #45a049;
+}
+
+#tableView {
+    position: relative;
+    min-height: 400px;
+}
+
+.header-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.header-section {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.toggle-view-btn {
+    position: relative;
+    display: block;
+    left: 50px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;`
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-view-btn:hover {
+    background-color: #45a049;
+}
+
+#tableView {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+}
+
+#graphCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#tableView {
+    position: relative;
+}

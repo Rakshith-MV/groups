@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groups</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <h1>Groups</h1>
+</head>
+<body>
+    <div class="container" >
+        <div class="cards-container">
+            {% for group in groups %}
+            <a href="{{ url_for( group.page ) }}" class="card-link">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="image-container">
+                            <img src="{{ url_for('static', filename='/' + group.image) }}" 
+                                alt="{{ group.name }}" 
+                                class="card-image">
+                        </div>
+                    </div>
+                    <div class="card-footer" style="background-color: {{ group.color }}">
+                        <h2>{{ group.name }}</h2>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

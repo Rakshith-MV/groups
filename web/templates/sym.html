@@ -1,0 +1,45 @@
+{% extends "groups_base.html" %}
+{% block header %}
+<title>Symmetric Groups</title>
+{% endblock %}
+
+
+{% block left_side %}
+<form method="POST">
+    {{ form.operation }} {{ form.number }}
+    {{ form.submit }}
+</form>
+
+{% endblock %}
+
+
+{% block right_side %}
+    {% if data[0] == 'S_n' %}
+        <h1 align="center">
+            S<sub> {{ data[1] }}</sub>
+        </h1>  
+    {% else %}
+        <h1 align="center">
+            A<sub> {{ data[1] }}</sub>
+        </h1>
+    {% endif %}
+    <button id="switchViewButton" class="switch" onclick="toggleView()">Switch Animation</button> <!-- New button for switching views -->
+    <div id="tableView">
+        {% if data[1] != 0 %}
+            <table style="margin-left: auto; margin-right: auto;"> 
+                {% for row in details.cayleys %}
+                <tr>
+                    {% for element in row %}
+                    <td>
+                        <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ 12 }}')">
+                            {{ element.__str__() }}       
+                        </button>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+

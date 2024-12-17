@@ -1,7 +1,8 @@
 from itertools import chain, combinations
 from functools import cache
 
-
+#groups may not exceed this, if in case then use the prime function.
+primes = (2,3,4,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199)
 """
 This is a custom cache decorator for multiply method, it may be usefull to form structures of the group in the long run, which might include 
 multiple product operations
@@ -148,3 +149,21 @@ def powerset(
             ):
     s = range(n)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+@cache
+def prime_decomposition(
+        k:int
+        ):
+    i = 0
+    factors = {}
+    while k != 1:
+        if k%primes[i]  == 0:
+            k = k//primes[i]
+            if primes[i] not in factors.keys():
+                factors[primes[i]] = 1
+            else:
+                factors[primes[i]]+=1
+        else:
+            i+=1
+    return factors
+    

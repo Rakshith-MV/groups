@@ -55,6 +55,10 @@
         {% else %}
         <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
         <script>
+            const vertices = {{ details.vertices|tojson }};
+            const edges = {{ details.edges|tojson }};
+            console.log(vertices);
+            console.log(edges);
             document.addEventListener('DOMContentLoaded', function() {
                 const container = document.getElementById('graph-container');
                 const rect = container.getBoundingClientRect(); 
@@ -62,8 +66,8 @@
                     rect.width,
                     rect.height,
                     container,  // Pass the container element instead of coordinates
-                    details[2],
-                    details[3]          // 'graph-container',
+                    vertices,
+                    edges          // 'graph-container',
                 );
             });
         </script>

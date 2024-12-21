@@ -89,10 +89,11 @@ class modulo:
     def __init__(self,
                  n:int,
                  operation:chr="+",
+                 generator:int=0
                  ) -> None:
-        self.group_order = n
         self.op = operation
         if operation == "*":
+            print("ENtered condition")
             self.id = 1
             self.elements= [members(i,n,self.id,operation) 
                             for i in range(n) 
@@ -101,6 +102,7 @@ class modulo:
             self.maps = dict(zip(self.elements,range(self.group_order)))
         else:
             self.id = 0
+            self.group_order = n    
             self.elements = [members(i,n,self.id,operation) 
                              for i in range(n)]
             self.maps = dict(zip(self.elements,range(self.group_order)))
@@ -129,6 +131,9 @@ class modulo:
     def find_generators(self
                    ):
         self.inverses()
+        if self.op == '*':
+            self.generators = self.elements
+            return
         self.generators =  [i for i in self.elements if i.order == len(self.elements)]
     
     def subgroups(
@@ -170,13 +175,12 @@ class modulo:
     #         subgroup.add(j)
 
     def edges_and_vertices(self,
-                           ):
+                           element=None
+                            ):
         self.edges = {}
-
-        if self.op == '*':
-            i = random.choice(self.elements)
-        else:
+        if element == None:
             i = random.choice(self.generators)
+
         cycles = self._cycles(i)
         for j in range(len(cycles[:-1])):
             self.edges[self.maps[cycles[j]]] = [self.maps[cycles[j+1]]]

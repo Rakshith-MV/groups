@@ -72,6 +72,8 @@ def home():
 data = [0,0,'table']
 details = {}
 
+#data = kind of group, range of data, graph or table, 
+
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
     form = integer_mod()  # Define the form here
@@ -93,11 +95,11 @@ def integer():
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
 
-
+    
     form.mod_num.data = int(data[1])
     form.operation.data = data[0]
     form.graph.data = data[2]
-
+    
     return render_template('integerm.html', 
                            title='Integer_mod_groups',
                              form=form, 
@@ -105,7 +107,6 @@ def integer():
                                ,details=details
                                ,graph=0,
                                )
-
 
 @app.route(
         '/symmetric/',

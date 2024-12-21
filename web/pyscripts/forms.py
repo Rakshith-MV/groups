@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import RadioField, IntegerField, SubmitField
+from wtforms import RadioField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired, NumberRange
 
 class integer_mod(FlaskForm):
@@ -7,6 +7,7 @@ class integer_mod(FlaskForm):
     operation = RadioField('Operation',choices=['+','*'],default='+')
     mod_num = IntegerField(validators=[DataRequired(),NumberRange(1,30,'Number b/w 0-30 please!!')],default=None)
     submit = SubmitField('compute') 
+    generator = SelectField('Choose the generator',choices=["A","B","CV"])
 
 class sym(FlaskForm):
     graph = RadioField('Viz',choices=['graph','table'],default='table')

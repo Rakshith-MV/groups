@@ -1,0 +1,2 @@
+Alright, need to fix the info card on symmetric group.
+Reset the default value to something else when switched the groups.

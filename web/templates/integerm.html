@@ -23,7 +23,17 @@
     {{ form.graph }}
     {{ form.switch }}
 </form>
- 
+{% if form.graph.data!= 'table' %}
+<form method="POST">
+    <select name="generator" id="generator">
+        {% element = iter(details.elements) %}
+        {% val = range(len(details.elements)) %}
+        {% for element in form.generator.choices %}
+            <option value="{{ val }}">{{ str(element.__next__()) }}</option>
+        {% endfor %}
+    </select>
+</form>
+{% endif %} 
 {% endblock %}
 
 
@@ -54,6 +64,7 @@
         </div>
         {% else %}
         <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
+        
         <script>
             const vertices = {{ details.vertices|tojson }};
             const edges = {{ details.edges|tojson }};

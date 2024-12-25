@@ -1,0 +1,23 @@
+[33mcommit 1fc317c1ae6656be6647b600fbd8cefb284bb97f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Sat Dec 21 06:24:05 2024 +0530
+
+    Trying to use generators
+
+[33mcommit 5d5eaf34dee72a1ba89f98be5b460f6f76010371[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Tue Dec 17 17:38:56 2024 +0530
+
+    The visualization part of integers is almost done.
+
+[33mcommit a719e9d7f9507a660bfdec2311befddfb21c3ad2[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Tue Dec 10 07:40:51 2024 +0530
+
+    Proper formatting
+
+[33mcommit c2f570ac042637a102846972386475b0a2248193[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Sat Dec 7 07:15:21 2024 +0530
+
+    Removed compiled stuff.

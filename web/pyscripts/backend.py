@@ -5,16 +5,16 @@ import groups as gp
 
 
 
-def create(choice,*,character=None,size=None,generator=None):
+def create(choice,*,character=None,size=None,gen=None):
     match choice:
         case 'Z':
-            group = gp.Mn(size,character,generator)
+            group = gp.Mn(size,character,gen)
             return {
                 'elements': group.elements,
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
-                'edges':group.edges,
-                'elements':group.elements
+                'edges': group.edges,
+                'choices': group.__str__()
             }
         case 'P':
             group = gp.Sn(size, character)

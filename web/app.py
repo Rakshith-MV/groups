@@ -1,5 +1,6 @@
 from math import factorial
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from wtforms import SelectField
 from pyscripts.colors import choose 
 import os
 from werkzeug.utils import secure_filename
@@ -69,7 +70,7 @@ groups = [
 def home():
     return render_template('index.html', groups=groups)
 
-data = [0,0,'table']
+data = ['+',4,'table']
 details = {}
 
 #data = kind of group, range of data, graph or table, 
@@ -82,20 +83,29 @@ def integer():
     if request.method == 'POST':
         if (form.mod_num != None):
             try:
-                data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]  # Convert to integer
+                if data[2] == 'table':
+                    data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
+                    details = create('Z',
+                                    character=str(data[0]),
+                                    size=int(data[1]))
+                    colors = [choose() for i in range(data[1])]
+                    k = iter(colors)
+                    for i in details['elements']:
+                        i.color = k.__next__()
+                    return redirect(url_for('integer'),code=302)
+                data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
+                gen = int(request.form['generator'])
+                print(gen)  
+                form.generator.data = gen
                 details = create('Z',
                                 character=str(data[0]),
-                                size=int(data[1]))
-                colors = [choose() for i in range(data[1])]
-                k = iter(colors)
-                for i in details['elements']:
-                    i.color = k.__next__()
-                return redirect(url_for('integer'))  # Redirect to the same page to see updated data
+                                size=int(data[1]),
+                                gen=gen)
+                return redirect(url_for('integer'),code=302)
 
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
 
-    
     form.mod_num.data = int(data[1])
     form.operation.data = data[0]
     form.graph.data = data[2]
@@ -103,10 +113,9 @@ def integer():
     return render_template('integerm.html', 
                            title='Integer_mod_groups',
                              form=form, 
-                               data=data
-                               ,details=details
-                               ,graph=0,
-                               )
+                               data=data,
+                               details=details,
+                               graph=0)
 
 @app.route(
         '/symmetric/',
@@ -125,6 +134,7 @@ def symmetric():
                                  size = data[1])
                 colors = [choose() for i in range(len(details['elements']))]
                 k = iter(colors)
+
                 for i in details['elements']:
                     i.color = k.__next__()
 

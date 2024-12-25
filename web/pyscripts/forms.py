@@ -6,8 +6,12 @@ class integer_mod(FlaskForm):
     graph = RadioField('Viz',choices=['graph','table'],default='table')
     operation = RadioField('Operation',choices=['+','*'],default='+')
     mod_num = IntegerField(validators=[DataRequired(),NumberRange(1,30,'Number b/w 0-30 please!!')],default=None)
-    submit = SubmitField('compute') 
-    generator = SelectField('Choose the generator',choices=["A","B","CV"])
+    submit = SubmitField('compute')
+    generator = SelectField('Choose Generator', choices=[], default=None)
+        
+    def update(self,gen):
+        self.generator.choices = gen
+
 
 class sym(FlaskForm):
     graph = RadioField('Viz',choices=['graph','table'],default='table')

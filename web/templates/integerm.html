@@ -17,24 +17,20 @@
 
 
 {% block left_side %}
-<form method="POST">
+<form method="POST" id="groupForm">
     {{ form.operation }} {{ form.mod_num }}
     {{ form.submit }}
     {{ form.graph }}
-    {{ form.switch }}
-</form>
-{% if form.graph.data!= 'table' %}
-<form method="POST">
-    <select name="generator" id="generator">
-        {% element = iter(details.elements) %}
-        {% val = range(len(details.elements)) %}
-        {% for element in form.generator.choices %}
-            <option value="{{ val }}">{{ str(element.__next__()) }}</option>
+    {% if form.graph.data == 'graph' %}
+        {% for i in details.elements %}
+            {% set _ = form.generator.choices.append(i.__str__()) %}
         {% endfor %}
-    </select>
+        <p style="display: inline; color: black; font-size: large;">Choose generator : </p> {{ form.generator }}       
+    {% endif %}
 </form>
-{% endif %} 
+
 {% endblock %}
+
 
 
 {% block right_side %}
@@ -42,29 +38,27 @@
         <h1 align="center">
             Z<sub> {{ data[1] }}</sub><sup>{{ data[0] }}</sup>
         </h1>  
-
         {% if form.graph.data == 'table'  %}
-        <div id="tableView">
-            {% if data[1] != 0 %}
-                <table style="margin-left: auto; margin-right: auto;"> 
-                    {% for row in details.cayleys %}
-                    <tr>
-                        {% for element in row %}
-                        <td>    
-                            <button
-                             style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
-                                {{ element.__str__() }}       
-                            </button>
-                        </td>
+            <div id="tableView">
+                {% if data[1] != 0 %}
+                    <table style="margin-left: auto; margin-right: auto;"> 
+                        {% for row in details.cayleys %}
+                        <tr>
+                            {% for element in row %}
+                            <td>    
+                                <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                                    {{ element.__str__() }}       
+                                </button>
+                            </td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-        </div>
+                    </table>
+                {% endif %}
+            </div>
         {% else %}
         <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
-        
+
         <script>
             const vertices = {{ details.vertices|tojson }};
             const edges = {{ details.edges|tojson }};
@@ -82,8 +76,8 @@
                 );
             });
         </script>
+        
+
         {% endif %}
     </div>
 {% endblock %}
-
-,

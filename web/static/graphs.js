@@ -1,4 +1,4 @@
-function stupid_animate(width, height, container, vertex, edge) {
+function stupid_animate(width, height, container, vertex, edge, names) {
     console.log("Called the stupid animate function.")
     let scene, camera, renderer, orbit, dragControls;
     const nodes = [];
@@ -65,16 +65,47 @@ function stupid_animate(width, height, container, vertex, edge) {
         // Create edges
         Object.entries(edges).forEach(([from, tos]) => {
             tos.forEach(to => {
+                // Create the line
                 const points = [
                     new THREE.Vector3(...vertices[from]),
                     new THREE.Vector3(...vertices[to])
                 ];
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 5 }); // Changed linewidth to 5
+                const material = new THREE.LineBasicMaterial({ color: 0x000000 });
                 const line = new THREE.Line(geometry, material);
                 scene.add(line);
+
+                // Create arrow head with smaller dimensions
+                const direction = new THREE.Vector3(
+                    vertices[to][0] - vertices[from][0],
+                    vertices[to][1] - vertices[from][1],
+                    vertices[to][2] - vertices[from][2]
+                ).normalize();
+
+                const arrowPosition = new THREE.Vector3(
+                    vertices[to][0] - direction.x * 0.15,
+                    vertices[to][1] - direction.y * 0.15,
+                    vertices[to][2] - direction.z * 0.15
+                );
+
+                const arrowGeometry = new THREE.ConeGeometry(0.03, 0.1, 8);
+                const arrowMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+                const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+                arrow.position.copy(arrowPosition);
+
+                // Point the arrow in the right direction
+                const quaternion = new THREE.Quaternion();
+                quaternion.setFromUnitVectors(
+                    new THREE.Vector3(0, 1, 0), 
+                    direction
+                );
+                arrow.setRotationFromQuaternion(quaternion);
+
+                scene.add(arrow);
+
                 lines.push({
                     line: line,
+                    arrow: arrow,
                     startNodeIndex: parseInt(from),
                     endNodeIndex: to
                 });
@@ -104,27 +135,44 @@ function stupid_animate(width, height, container, vertex, edge) {
     }
 
     function updateEdges() {
-        lines.forEach(({line, startNodeIndex, endNodeIndex}) => {
+        lines.forEach(({line, arrow, startNodeIndex, endNodeIndex}) => {
             const startNode = nodes[startNodeIndex];
             const endNode = nodes[endNodeIndex];
             
             const positions = line.geometry.attributes.position.array;
             
-            // Update start point
+            // Update line positions
             positions[0] = startNode.position.x;
             positions[1] = startNode.position.y;
             positions[2] = startNode.position.z;
             
-            // Update end point
             positions[3] = endNode.position.x;
             positions[4] = endNode.position.y;
             positions[5] = endNode.position.z;
             
             line.geometry.attributes.position.needsUpdate = true;
 
-            // Keep the size of the spheres constant
-            startNode.scale.set(1, 1, 1); // Set to desired constant size
-            endNode.scale.set(1, 1, 1);   // Set to desired constant size
+            // Update arrow position and rotation
+            const direction = new THREE.Vector3(
+                endNode.position.x - startNode.position.x,
+                endNode.position.y - startNode.position.y,
+                endNode.position.z - startNode.position.z
+            ).normalize();
+
+            const arrowPosition = new THREE.Vector3(
+                endNode.position.x - direction.x * 0.2,
+                endNode.position.y - direction.y * 0.2,
+                endNode.position.z - direction.z * 0.2
+            );
+
+            arrow.position.copy(arrowPosition);
+
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromUnitVectors(
+                new THREE.Vector3(0, 1, 0), 
+                direction
+            );
+            arrow.setRotationFromQuaternion(quaternion);
         });
     }
 

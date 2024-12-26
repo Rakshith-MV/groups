@@ -70,7 +70,7 @@ groups = [
 def home():
     return render_template('index.html', groups=groups)
 
-data = ['+',4,'table']
+data = ['+',4,'table','0']
 details = {}
 
 #data = kind of group, range of data, graph or table, 
@@ -93,10 +93,8 @@ def integer():
                     for i in details['elements']:
                         i.color = k.__next__()
                     return redirect(url_for('integer'),code=302)
-                data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
-                gen = int(request.form['generator'])
-                print(gen)  
-                form.generator.data = gen
+                data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
+                gen = int(data[3])
                 details = create('Z',
                                 character=str(data[0]),
                                 size=int(data[1]),

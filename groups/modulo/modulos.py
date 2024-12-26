@@ -111,7 +111,9 @@ class modulo:
                 self.gen = i
                 break
         self.edges_and_vertices(generator)
-        
+        #There is a probability that the element might not be in the set. for now it's working let's see.
+
+
     def inverses(self
                 )->None:
         for i in self.elements:
@@ -153,10 +155,7 @@ class modulo:
             if i.order == main:
                 gen = i
                 break
-        print(i)
         cycles = [self._cycles(i)]
-        for j in self.subgroup_generated(i):
-            print(j)
         return cycles
 
 
@@ -186,13 +185,11 @@ class modulo:
                            element=None
                             ):
         self.edges = {}
-        if element == None:
-            i = random.choice(self.generators)
+        if element == None or self.op == '*':
+            i = random.choice(self.elements)
             cycles = self._cycles(i)
         else:
-            cycles = self._sub_cycle()
-        for i in cycles:
-            print(i.__str__())    
+            cycles = self._sub_cycle()    
         for j in range(len(cycles[:-1])):
             self.edges[self.maps[cycles[j]]] = [self.maps[cycles[j+1]]]
             self.edges[self.maps[cycles[-1]]] = [self.maps[cycles[0]]]

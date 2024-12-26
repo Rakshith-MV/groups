@@ -19,14 +19,15 @@
 {% block left_side %}
 <form method="POST" id="groupForm">
     {{ form.operation }} {{ form.mod_num }}
-    {{ form.submit }}
     {{ form.graph }}
     {% if form.graph.data == 'graph' %}
+        {{ form.update(data[3]) }}
         {% for i in details.elements %}
             {% set _ = form.generator.choices.append(i.__str__()) %}
         {% endfor %}
         <p style="display: inline; color: black; font-size: large;">Choose generator : </p> {{ form.generator }}       
     {% endif %}
+    {{ form.submit }}
 </form>
 
 {% endblock %}
@@ -62,6 +63,8 @@
         <script>
             const vertices = {{ details.vertices|tojson }};
             const edges = {{ details.edges|tojson }};
+            const names = {{ details.choices|tojson }};
+            console.log(names);
             console.log(vertices);
             console.log(edges);
             document.addEventListener('DOMContentLoaded', function() {
@@ -72,7 +75,8 @@
                     rect.height,
                     container,  // Pass the container element instead of coordinates
                     vertices,
-                    edges          // 'graph-container',
+                    edges,          // 'graph-container',
+                    names
                 );
             });
         </script>

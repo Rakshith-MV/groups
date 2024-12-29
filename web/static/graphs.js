@@ -1,8 +1,8 @@
 function stupid_animate(width, height, container, vertex, edge, names) {
-    console.log("Called the stupid animate function.")
     let scene, camera, renderer, orbit, dragControls;
     const nodes = [];
     const lines = [];
+    const nodeLabels = [];
 
     // Sample input data            
     // const vertices = [
@@ -48,8 +48,37 @@ function stupid_animate(width, height, container, vertex, edge, names) {
         pointLight.position.set(10, 10, 10);
         scene.add(pointLight);
 
+        // Add toggle button for names
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = 'label';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.right = '14px';
+        toggleButton.style.size = 'bold';
+        toggleButton.style.backgroundColor = '#1DA1F2';
+        toggleButton.style.top = '10px';
+        toggleButton.style.color = 'white';
+        toggleButton.style.border = 'none';
+        toggleButton.style.zIndex = '1000';
+        toggleButton.addEventListener('mouseover', () => {
+            toggleButton.style.transform = 'scale(1.1)';
+        });
+
+        toggleButton.addEventListener('mouseout', () => {
+            toggleButton.style.transform = 'scale(1)';
+        });
+        container.appendChild(toggleButton);
+
+        toggleButton.addEventListener('click', () => {
+            nodeLabels.forEach(text => {
+                if (text) {
+                    text.visible = !text.visible;
+                }
+            });
+        });
+
         // Create nodes (vertices)
-        vertices.forEach(position => {
+        for (let i = 0; i < vertices.length; i++) {
+            const position = vertices[i];
             const geometry = new THREE.SphereGeometry(0.1, 32, 32);
             const material = new THREE.MeshStandardMaterial({ 
                 color: 0xff69b4,
@@ -58,9 +87,35 @@ function stupid_animate(width, height, container, vertex, edge, names) {
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.set(...position);
+            sphere.name = names[i];
+            scene.add(new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 0 })));
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 0 }));
+            sprite.position.copy(sphere.position);
+            sprite.position.y += 0.2;
+            sprite.scale.set(0.1, 0.1, 0.1);
+            scene.add(sprite);
+            const loader = new THREE.FontLoader();
+            loader.load('https://rawcdn.githack.com/mrdoob/three.js/r128/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+                const textGeometry = new THREE.TextGeometry(names[i], {
+                    font: font,
+                    size: 0.08,
+                    color: "black",
+                    height: 0.01,
+                    curveSegments: 12,
+                });
+                const textMaterial = new THREE.MeshBasicMaterial({ color: "black" });
+                const text = new THREE.Mesh(textGeometry, textMaterial);
+                text.position.copy(sphere.position);
+                text.position.y += 0.1;
+                // Make text always face the camera
+                text.rotation.set(0, 0, 0);
+                text.quaternion.copy(camera.quaternion);
+                scene.add(text);
+                nodeLabels[i] = text;
+            });
             scene.add(sphere);
             nodes.push(sphere);
-        });
+        }
 
         // Create edges
         Object.entries(edges).forEach(([from, tos]) => {
@@ -128,7 +183,15 @@ function stupid_animate(width, height, container, vertex, edge, names) {
             orbit.enabled = true;
         });
         
-        dragControls.addEventListener('drag', updateEdges);
+        dragControls.addEventListener('drag', function(event) {
+            updateEdges();
+            // Update text position
+            const nodeIndex = nodes.indexOf(event.object);
+            if (nodeIndex !== -1 && nodeLabels[nodeIndex]) {
+                nodeLabels[nodeIndex].position.copy(event.object.position);
+                nodeLabels[nodeIndex].position.y += 0.1;
+            }
+        });
 
         // Handle window resizing
         window.addEventListener('resize', onWindowResize, false);
@@ -188,9 +251,13 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     function animate() {
         requestAnimationFrame(animate);
         orbit.update();
-        // renderer.render(scene, camera);
+        // Update text orientations to face camera
+        nodeLabels.forEach(text => {
+            if (text) {
+                text.quaternion.copy(camera.quaternion);
+            }
+        });
         return renderer.render(scene, camera);
-
     }
 
     function highlightNodes() {

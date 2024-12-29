@@ -1,13 +1,29 @@
 {% extends "groups_base.html" %}
 {% block header %}
 <title>Symmetric Groups</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
+<script src="{{ url_for('static', filename='/script.js') }}"></script>
+<script src="{{ url_for('static', filename='/graphs.js') }}"></script>
+
 {% endblock %}
 
 
 {% block left_side %}
 <form method="POST">
     {{ form.operation }} {{ form.number }}
+    {{ form.graph }}
+    {% if form.graph.data == 'graph' %}
+        {{ form.update(data[3]) }}
+        {% for i in details.elements %}
+            {% set _ = form.generator.choice.append(i.__str__()) %}
+        {% endfor %}
+        <p style="display: inline; color: black; font-size: large;">Choose generator</p>
+    {% endif %}
     {{ form.submit }}
+
 </form>
 
 {% endblock %}
@@ -23,7 +39,7 @@
             A<sub> {{ data[1] }}</sub>
         </h1>
     {% endif %}
-    <button id="switchViewButton" class="switch" onclick="toggleView()">Switch Animation</button> <!-- New button for switching views -->
+
     <div id="tableView">
         {% if data[1] != 0 %}
             <table style="margin-left: auto; margin-right: auto;"> 

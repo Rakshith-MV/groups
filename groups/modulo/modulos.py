@@ -144,19 +144,19 @@ class modulo:
     def subgroups(
             self
             )->tuple:
-        factors = prime_decomposition(self.group_order)
-        print(factors)
+        factors, possible_subgroups = prime_decomposition(self.group_order)
         index = max(factors.values())
+        print(factors,index)
         for i in factors.keys():
             if factors[i] == index:
                 main = i**index
                 break
-        for i in self.elements:
-            if i.order == main:
-                gen = i
-                break
-        cycles = [self._cycles(i)]
-        return cycles
+        # for i in self.elements:
+        #     if i.order == main:
+        #         gen = i
+        #         break
+        # cycles = [self._cycles(i)]
+        # return cycles
 
 
     @cache

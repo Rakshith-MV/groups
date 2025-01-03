@@ -111,11 +111,13 @@ def even(
         s:object
         )->bool:
     sum = 0
+    if s.string == '':
+        return 1
     for i in s.string.split(','):
         sum += (len(i)%2)
-    if sum == 0:
-        return 1
-    return sum%2
+    if sum%2 == 0:
+        return 0
+    return 1
 
 #-----------------------------------------------------------------------------------------------------------------
 

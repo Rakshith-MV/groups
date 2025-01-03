@@ -29,5 +29,6 @@ class sym(FlaskForm):
 
 class dn(FlaskForm):
     graph = RadioField('Viz',choices=['graph','table'],default='table')
-    number = IntegerField(validators=[DataRequired(), NumberRange(1,15,'Number b/w 1-30 please!!')],default=None)
+    number = IntegerField(validators=[DataRequired(), NumberRange(1,15,'Number b/w 1-15 please!!')],default=3)
     submit = SubmitField('compute')
+    generator = SelectField("Choose Generator", choices=[], default=None)

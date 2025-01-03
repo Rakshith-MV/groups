@@ -18,6 +18,7 @@ class members:
         self.noch = group_order                                                    #noch == number of characters
         self._all = [str(i) for i in range(group_order)]                           #list of characters
         self._id = dict(zip(self._all, self._all))                                 #Identity
+        self.position : None
         self.cycles = []
         self.maps = element_m
         self.string = element_s
@@ -45,7 +46,7 @@ class members:
 
     def __matmul__(self,
                    sec:dict
-                     )->dict:
+                    )->dict:
         new = {}
         for i in self._all:
             new[i] = self.maps[sec[i]]

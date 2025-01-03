@@ -70,49 +70,57 @@ groups = [
 def home():
     return render_template('index.html', groups=groups)
 
-data = ['+',4,'table','0']
-details = {}
+#int_data = kind of group, range of data, graph or table,
+int_data = ['+',4,'table','0']
+int_details = {}
+#sym_data = ['type',number, graph]
+sym_data = ['S_n',3,'table',None]
+sym_details = {}
 
-#data = kind of group, range of data, graph or table, 
+dn_data = [3,'table']
+dn_details = {}
+
+ 
 
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
     form = integer_mod()  # Define the form here
-    global data
-    global details
+    global int_data
+    global int_details
     if request.method == 'POST':
         if (form.mod_num != None):
             try:
-                if data[2] == 'table':
-                    data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
-                    details = create('Z',
-                                    character=str(data[0]),
-                                    size=int(data[1]))
-                    colors = [choose() for i in range(data[1])]
+                if int_data[2] == 'table':
+                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
+                    int_details = create('Z',
+                                    character=str(int_data[0]),
+                                    size=int(int_data[1]))
+                    colors = [choose() for i in range(int_data[1])]
                     k = iter(colors)
-                    for i in details['elements']:
+                    for i in int_details['elements']:
                         i.color = k.__next__()
                     return redirect(url_for('integer'),code=302)
-                data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
-                gen = int(data[3])
-                details = create('Z',
-                                character=str(data[0]),
-                                size=int(data[1]),
+                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
+                gen = int(int_data[3])
+                int_details = create('Z',
+                                character=str(int_data[0]),
+                                size=int(int_data[1]),
                                 gen=gen)
                 return redirect(url_for('integer'),code=302)
 
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
 
-    form.mod_num.data = int(data[1])
-    form.operation.data = data[0]
-    form.graph.data = data[2]
+    
+    form.mod_num.data = int(int_data[1])
+    form.operation.data = int_data[0]
+    form.graph.data = int_data[2]
     
     return render_template('integerm.html', 
                            title='Integer_mod_groups',
                              form=form, 
-                               data=data,
-                               details=details,
+                               data=int_data,
+                               details=int_details,
                                graph=0)
 
 @app.route(
@@ -121,32 +129,34 @@ def integer():
 )
 def symmetric():
     form = sym()
-    global details
-    global data
+    global sym_details
+    global sym_data
     if request.method == 'POST':
         if (form.number != None) :
             try:
-                data = [str(request.form['operation']),int(request.form['number'])]  # Convert to integer
-                details = create('P',
-                                 character=0 if data[0] == 'S_n' else 1,
-                                 size = data[1])
-                colors = [choose() for i in range(len(details['elements']))]
+                sym_data = [str(request.form['operation']),int(request.form['number']),str(request.form['graph'])]  # Convert to integer
+                sym_details = create('P',
+                                 character= sym_data[0],
+                                 size = sym_data[1])
+                colors = [choose() for i in range(len(sym_details['elements']))]
                 k = iter(colors)
 
-                for i in details['elements']:
+                for i in sym_details['elements']:
                     i.color = k.__next__()
 
                 return redirect(url_for('symmetric'),code= 302)  # Redirect to the same page to see updated data
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
     
-    form.number.data = data[1]
-
+    form.operation.data = sym_data[0]
+    form.number.data = sym_data[1]
+    form.graph.data = sym_data[2]
+    # form.generator.data = sym_data[3]
     return render_template('sym.html', 
                            title='symmetric-groups',
                              form=form, 
-                               data=data
-                               ,details=details)
+                               data=sym_data
+                               ,details=sym_details)
 
 @app.route(
         '/dihedral/',
@@ -154,30 +164,30 @@ def symmetric():
 )
 def dihedral():
     form = dn()
-    global details
-    global data
+    global dn_details
+    global dn_data
     if request.method == 'POST':
-        if (form.number != None) :
+        if (form.number != None):
             try:
-                data = [int(request.form['number'])]  # Convert to integer
-                details = create('D',
-                                 size= data[0])
-                colors = [choose() for i in range(len(details['elements']))]
+                dn_data = [int(request.form['number']),str(request.form['graph'])]  # Convert to integer
+                dn_details = create('D',
+                                 size= dn_data[0])
+                colors = [choose() for i in range(len(dn_details['elements']))]
                 k = iter(colors)
-                for i in details['elements']:
+                for i in dn_details['elements']:
                     i.color = k.__next__()
                 return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
-    form.number.data = data[0]
-
+    form.number.data = dn_data[0]
+    form.graph.data = dn_data[1]
 
     return render_template('dihedral.html', 
                            title='dihedral-groups',
                              form=form, 
-                               data=data
-                               ,details=details)
+                               data=dn_data,
+                               details=dn_details)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')

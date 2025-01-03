@@ -88,12 +88,12 @@ function stupid_animate(width, height, container, vertex, edge, names) {
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.set(...position);
             sphere.name = names[i];
-            scene.add(new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 0 })));
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 0 }));
-            sprite.position.copy(sphere.position);
-            sprite.position.y += 0.2;
-            sprite.scale.set(0.1, 0.1, 0.1);
-            scene.add(sprite);
+            // scene.add(new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 1 })));
+            // const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('https://i.imgur.com/6ZuOaXa.png'), transparent: true, opacity: 0 }));
+            // sprite.position.copy(sphere.position);
+            // sprite.position.y += 0.2;
+            // sprite.scale.set(0.1, 0.1, 0.1);
+            // scene.add(sprite);
             const loader = new THREE.FontLoader();
             loader.load('https://rawcdn.githack.com/mrdoob/three.js/r128/examples/fonts/helvetiker_bold.typeface.json', function (font) {
                 const textGeometry = new THREE.TextGeometry(names[i], {

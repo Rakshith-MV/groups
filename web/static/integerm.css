@@ -46,7 +46,8 @@ html, body {
 
 .container-fluid {
     display: flex;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
+    position: relative;
 }
 
 
@@ -214,4 +215,22 @@ html, body {
 
 #tableView {
     position: relative;
+}
+
+/* Add these new styles */
+.toggle-btn {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 1000;
+    padding: 8px 12px;
+    background-color: #1DA1F2;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.left.hidden {
+    display: none;
 }

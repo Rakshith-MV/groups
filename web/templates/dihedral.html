@@ -1,12 +1,26 @@
 {% extends "groups_base.html" %}
 {% block header %}
 <title>Dihedral Groups</title>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
+<script src="{{ url_for('static', filename='/script.js') }}"></script>
+<script src="{{ url_for('static', filename='/graphs.js') }}"></script>
+
 {% endblock %}
 
 
 {% block left_side %}
-<form method="POST">
-     {{ form.number }}
+<form method="POST" id="groupForm">
+    {{ form.number }} {{ form.graph }}
+    {% if form.graph.data == 'graph' %}
+        {% for i in details.elements %}
+            {% set _ = form.generator.choices.append(i.__str__()) %}
+        {% endfor %}
+        <p style="display: inline; color: black; font-size: large;">Choose generator : </p> {{ form.generator }}       
+    {% endif %}
     {{ form.submit }}
 </form>
 
@@ -17,9 +31,8 @@
     <h1 align="center">
         D<sub> {{ data[0] }}</sub>
     </h1>  
-    <button id="switchViewButton" class="switch" onclick="toggleView()">Switch Animation</button>
-    <div id="tableView">
-        {% if data[1] != 0 %}
+    {% if data[1] == 'table' %}
+        <div id="tableView">
             <table style="margin-left: auto; margin-right: auto;"> 
                 {% for row in details.cayleys %}
                 <tr>
@@ -27,9 +40,17 @@
                     <td>
                         <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
                             {% if element.f == 1%}
-                                fr<sup> {{ element.r }}</sup>       
+                                {% if element.r != 0 %}
+                                    fr<sup> {{ element.r }}</sup>       
+                                {% else %}
+                                    f
+                                {% endif %}
                             {% else %}
-                                r<sup> {{ element.r }}</sup>
+                                {% if element.r != 0 %}
+                                    r<sup> {{ element.r }}</sup>       
+                                {% else %}
+                                    e
+                                {% endif %}
                             {% endif %}
                         </button>
                     </td>
@@ -37,9 +58,26 @@
                 </tr>
                 {% endfor %}
             </table>
-        {% endif %}
-    </div>
-
+        </div>
+    {% else %}
+    <div id="graph-container-di" style="width: 100%; height: calc(100% - 60px); position: relative; "></div>
+        
+    <script>
+        const vertices = {{ details.vertices|tojson }};
+        const edges = {{ details.edges|tojson }};
+        const names = {{ details.choices|tojson }};
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('graph-container-di');
+            const rect = container.getBoundingClientRect(); 
+            stupid_animate(
+                rect.width,
+                rect.height,
+                container,  // Pass the container element instead of coordinates
+                vertices,
+                edges,          // 'graph-container',
+                names
+            );
+        });
+    </script>        
+    {% endif %}
 {% endblock %}
-
-

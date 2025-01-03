@@ -1,7 +1,6 @@
 import math
 from functools import cache
-
-
+from ..helpers.graphs import circle
 """
 2 operations, one cyclic the other flips, 
 Rotations and Reflections
@@ -28,10 +27,20 @@ class members:
     def _cycle_inverse(self,
                       ) -> None:
         o = [self.f, self.r]
-        while o != [0,0]:
-            o = [(2*o[0])%2, (2*o[1])%self.n]
+        
+        #Inverse is straight forward
+        if self.f == 1:
+            self.inverse = self
+        else:
+            self.inverse = members(0,self.n-self.r,self.n)
+        
+        #order
+        a = self
+        while a.r != 0 or a.f != 0:
+            a *= self
             self.order +=1
-        self.inv = members(*o,self.n)
+        
+
 
         """
         In D4
@@ -51,7 +60,7 @@ class members:
         Elements of order 3: r2, r4
         Elements of order 6: r, frf
         """
-        
+
     def __mul__(self,
                 element
                 )->any:
@@ -59,15 +68,16 @@ class members:
             return members((self.f + element.f)%2,(self.n-self.r+element.r)%self.n,self.n)
         return members(self.f, (self.r+element.r)%self.n,self.n)
 
+
     def __eq__(self, value: object) -> bool:
-        if self.r != value.r or \
-            self.n != value.n or \
-                self.f != value.f:
+        if self.r != value.r or self.f != value.f:
             return 0
         return 1
     
     def __str__(self) -> str:
-        return f"f^{self.f}r^{self.r}"  
+        if self.r != 0:
+            return f"fr^{self.r}" if self.f == 1 else f"r^{self.r}"  
+        return "f" if self.f == 1 else "e"
 
 
 class Dn:
@@ -79,17 +89,18 @@ class Dn:
         self.id = members(0,0,n)
         for i in self.elements:
             i._cycle_inverse()
+        self.maps = dict(zip([(i,j) for i in range(2) for j in range(self.n)], range(2*self.n)))
+        self.edges_and_vertices()
+
 
     def compute_conjugacy_classes(self
                           ):
         for i in self.elements:
             for j in self.elements:
-                t = j*i*j.inv
+                t = j*i*j.inverse
                 i.conjugates.append(t) if t not in i.conjugates else None
             self.conjugacy_classes.add(i.conjugates)
         return self.conjugacy_classes
-
-
 
     def cayleys(self
                 )->list:
@@ -100,7 +111,32 @@ class Dn:
                 temp.append(i*j)
             self.table.append(temp)
         return self.table
+    
+    def cycles(self,
+               j
+               ):
+        return [j*i for i in self.elements]
 
+
+    def edges_and_vertices(self,
+                        gen=['fr0','r1']):   #format must fr^n or r^n, r must be present
+        self.edges = dict(zip(range(2*self.n),[[] for i in range(2*self.n)]))
+        self.vertices = [*circle(self.n,0.3),*circle(self.n,1)]
+        generators = []
+        for i in gen:
+            if 'f' in i:
+                generators.append(members(1,int(i[-1]),self.n))
+            else:
+                generators.append(members(0,int(i[-1]),self.n))
+
+        for j in generators:
+            for inp,out in zip(self.elements,self.cycles(j)):
+                self.edges[self.maps[(inp.f,inp.r)]].append(self.maps[out.f,out.r])
         
+    def __str__(self) -> str:
+        return [str(i) for i in self.elements]
+
 if __name__ == "__main__":
     k = Dn(4)
+    for i in k.elements:
+        print(i)

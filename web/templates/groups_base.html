@@ -15,7 +15,10 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="left">
+        <!-- Add toggle button -->
+        <button id="toggleLeft" class="toggle-btn">☰</button>
+        
+        <div class="left" id="leftSection">
 
             <a href="{{ url_for('home') }}"><h1 class="main">Groups</h1></a>
             {% block left_side %}
@@ -29,5 +32,13 @@
             {% endblock %}
         </div>
     </div>
+
+    <!-- Add JavaScript at the end of body -->
+    <script>
+        document.getElementById('toggleLeft').addEventListener('click', function() {
+            const leftSection = document.getElementById('leftSection');
+            leftSection.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>

@@ -9,12 +9,13 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
 <script src="{{ url_for('static', filename='/script.js') }}"></script>
 <script src="{{ url_for('static', filename='/graphs.js') }}"></script>
-
     
 
 {% endblock %}
 
+
 <!-- removed     {{ form.update(data[3]) }} from 24 -->
+<!-- Since the choices are loaded every single time, it's tricky to get the previous selection back!!. The subgroups must be handled differently!! -->
 {% block left_side %}
 <form method="POST" id="groupForm">
     {{ form.operation }} {{ form.mod_num }}
@@ -58,7 +59,6 @@
             </div>
         {% else %}
         
-        <div id="graph-container-in" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; margin: 0; padding: 0; display: inline-block;"></div>
         <script>
             const vertices = {{ details.vertices|tojson }};
             const edges = {{ details.edges|tojson }};
@@ -70,6 +70,7 @@
                     const container = entry.target;
                     const rect = container.getBoundingClientRect();
                     // Reinitialize the graph with new dimensions
+                    console.log("Some Changes in the size");
                     stupid_animate(
                         rect.width,
                         rect.height,
@@ -82,8 +83,9 @@
             });
 
             document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('graph-container-in');
+                const container = document.getElementById('graph-container');
                 const rect = container.getBoundingClientRect(); 
+                console.log(rect.width,rect.height,rect.left);
                 stupid_animate(
                     rect.width,
                     rect.height,
@@ -94,7 +96,7 @@
                 );
                 
                 // Start observing the container for size changes
-                resizeObserver.observe(container);
+                // resizeObserver.observe(container);
             });
         </script>
         

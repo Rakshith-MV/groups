@@ -1,4 +1,5 @@
 from math import factorial
+from tkinter import NO
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from wtforms import SelectField
 from pyscripts.colors import choose 
@@ -90,8 +91,9 @@ def integer():
     if request.method == 'POST':
         if (form.mod_num != None):
             try:
+                print("entered try")
+                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
                 if int_data[2] == 'table':
-                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
                     int_details = create('Z',
                                     character=str(int_data[0]),
                                     size=int(int_data[1]))
@@ -99,14 +101,31 @@ def integer():
                     k = iter(colors)
                     for i in int_details['elements']:
                         i.color = k.__next__()
+                    print("COlors changed")
                     return redirect(url_for('integer'),code=302)
-                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
-                gen = int(int_data[3])
-                int_details = create('Z',
-                                character=str(int_data[0]),
-                                size=int(int_data[1]),
-                                gen=gen)
-                return redirect(url_for('integer'),code=302)
+                try:
+                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
+                    gen = int(int_data[3])
+                    int_details = create('Z',
+                                    character=str(int_data[0]),
+                                    size=int(int_data[1]),
+                                    gen=gen)
+                    print("updating values")    
+                    form.mod_num.data = int(int_data[1])
+                    form.operation.data = int_data[0]
+                    form.graph.data = int_data[2]
+                    form.generator.dat = int_data[3]
+                    print(form.mod_num.data, form.operation.data, form.graph.data, form.generator.data)                                
+                    return redirect(url_for('integer'),code=302)
+                except:
+                    print("no generator")
+                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
+                    int_details = create('Z',
+                                         character=int_data[0],
+                                         size=int_data[1],
+                                         gen=None)
+                    return redirect(url_for('integer'))
+
 
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
@@ -190,5 +209,4 @@ def dihedral():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True,host='0.0.0.0')
-    print(help(app.run))
+    app.run(debug=True,host='0.0.0.0')

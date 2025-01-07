@@ -194,7 +194,7 @@ function stupid_animate(width, height, container, vertex, edge, names) {
         });
 
         // Handle window resizing
-        window.addEventListener('resize', onWindowResize, false);
+        // window.addEventListener('resize', onWindowResize, false);
     }
 
     function updateEdges() {

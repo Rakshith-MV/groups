@@ -28,56 +28,56 @@
 
 
 {% block right_side %}
-    <h1 align="center">
-        D<sub> {{ data[0] }}</sub>
-    </h1>  
-    {% if data[1] == 'table' %}
-        <div id="tableView">
-            <table style="margin-left: auto; margin-right: auto;"> 
-                {% for row in details.cayleys %}
-                <tr>
-                    {% for element in row %}
-                    <td>
-                        <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
-                            {% if element.f == 1%}
-                                {% if element.r != 0 %}
-                                    fr<sup> {{ element.r }}</sup>       
+    <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
+        <h1 align="center">
+            D<sub> {{ data[0] }}</sub>
+        </h1>  
+        {% if data[1] == 'table' %}
+            <div id="tableView">
+                <table style="margin-left: auto; margin-right: auto;"> 
+                    {% for row in details.cayleys %}
+                    <tr>
+                        {% for element in row %}
+                        <td>
+                            <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                                {% if element.f == 1%}
+                                    {% if element.r != 0 %}
+                                        fr<sup> {{ element.r }}</sup>       
+                                    {% else %}
+                                        f
+                                    {% endif %}
                                 {% else %}
-                                    f
+                                    {% if element.r != 0 %}
+                                        r<sup> {{ element.r }}</sup>       
+                                    {% else %}
+                                        e
+                                    {% endif %}
                                 {% endif %}
-                            {% else %}
-                                {% if element.r != 0 %}
-                                    r<sup> {{ element.r }}</sup>       
-                                {% else %}
-                                    e
-                                {% endif %}
-                            {% endif %}
-                        </button>
-                    </td>
+                            </button>
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% else %}
-    <div id="graph-container-di" style="width: 100%; height: calc(100% - 60px); position: relative; "></div>
-        
-    <script>
-        const vertices = {{ details.vertices|tojson }};
-        const edges = {{ details.edges|tojson }};
-        const names = {{ details.choices|tojson }};
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('graph-container-di');
-            const rect = container.getBoundingClientRect(); 
-            stupid_animate(
-                rect.width,
-                rect.height,
-                container,  // Pass the container element instead of coordinates
-                vertices,
-                edges,          // 'graph-container',
-                names
-            );
-        });
-    </script>        
-    {% endif %}
+                </table>
+            </div>
+        {% else %}
+            
+        <script>
+            const vertices = {{ details.vertices|tojson }};
+            const edges = {{ details.edges|tojson }};
+            const names = {{ details.choices|tojson }};
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('rightSection');
+                stupid_animate(
+                    container.clientWidth,
+                    container.clientHeight,
+                    container,
+                    vertices,
+                    edges,
+                    names
+                );
+            });
+        </script> 
+        {% endif %}
+    </div>       
 {% endblock %}

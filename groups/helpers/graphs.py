@@ -1,7 +1,6 @@
 from functools import cache
 from math import pi, sin, cos, sqrt
-from numpy import matrix, size, shape
-
+import numpy as np
 
 def sub(x:list,
         y:list):
@@ -55,7 +54,7 @@ def optimal_matrix_mult(x:list,
     
     return c
 
-
+#Use multiply by x for rotation of symmetric matrix
 
 @cache
 def circle(numbers,
@@ -66,22 +65,23 @@ def circle(numbers,
         points.append([r*sin(2*i*pi/numbers), r*cos(2*i*pi/numbers),0])
     return points
 
-def rotation_matrix_x(angle):
-    return [[1, 0, 0], [0, cos(angle), -sin(angle)], [0, sin(angle), cos(angle)]]
+x = lambda angle:  [[1, 0, 0], [0, cos(angle), -sin(angle)], [0, sin(angle), cos(angle)]]
 
-def rotation_matrix_y(angle):
-    return [[cos(angle), 0, sin(angle)], [0, 1, 0], [-sin(angle), 0, cos(angle)]]
+y = lambda angle : [[cos(angle), 0, sin(angle)], [0, 1, 0], [-sin(angle), 0, cos(angle)]]
 
-def rotation_matrix_z(angle):
-    return [[cos(angle), -sin(angle), 0], [sin(angle), cos(angle), 0], [0, 0, 1]]
+z = lambda angle: [[cos(angle), -sin(angle), 0], [sin(angle), cos(angle), 0], [0, 0, 1]]
 
+def mult(a,b):
+    return np.round((np.matrix(a)@np.matrix(b).T).T,5).tolist()[0]
 
 
 def sphere(circle,
            cosets):
     points = []
-    for i in cosets:
-        ...
+    for i in range(cosets):                   #confused whether to use 0 - n-1 or 1 - n
+        points.append(mult(i,x(2*pi*i/cosets)))        
+
+        
 
 
 if __name__=='__main__':

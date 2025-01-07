@@ -15,7 +15,11 @@ Ofcourse if the group is cyclic then.
 
 
 from functools import cache
+from logging import raiseExceptions
 import math as mt
+from warnings import catch_warnings
+
+from matplotlib.streamplot import OutOfBounds
 from ..helpers.Decorators import powerset, prime_decomposition
 from ..helpers.graphs import circle
 import random
@@ -185,11 +189,15 @@ class modulo:
                            element=None
                             ):
         self.edges = {}
-        if element == None or self.op == '*':
+        try:
+            if element == None or self.op == '*':
+                i = random.choice(self.elements)
+                cycles = self._cycles(i)
+            else:
+                cycles = self._sub_cycle()    
+        except:
             i = random.choice(self.elements)
-            cycles = self._cycles(i)
-        else:
-            cycles = self._sub_cycle()    
+            cycles = self._cycles(i)                
         for j in range(len(cycles[:-1])):
             self.edges[self.maps[cycles[j]]] = [self.maps[cycles[j+1]]]
             self.edges[self.maps[cycles[-1]]] = [self.maps[cycles[0]]]
@@ -209,10 +217,6 @@ class modulo:
         return self.elements[n]
     
     def __str__(self) -> str:
-        # s = "Elements : "
-        # for i in self.elements:
-        #     s+=str(i.element)+', '
-        # return s.rstrip(',')
         return [i.__str__() for i in self.elements]    
         
 if __name__ == "__main__":

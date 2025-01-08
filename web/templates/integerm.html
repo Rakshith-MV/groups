@@ -64,24 +64,6 @@
             const edges = {{ details.edges|tojson }};
             const names = {{ details.choices|tojson }};
             
-            // Add resize observer to handle container size changes
-            const resizeObserver = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    const container = entry.target;
-                    const rect = container.getBoundingClientRect();
-                    // Reinitialize the graph with new dimensions
-                    console.log("Some Changes in the size");
-                    stupid_animate(
-                        rect.width,
-                        rect.height,
-                        container,
-                        vertices,
-                        edges,
-                        names
-                    );
-                }
-            });
-
             document.addEventListener('DOMContentLoaded', function() {
                 const container = document.getElementById('graph-container');
                 const rect = container.getBoundingClientRect(); 

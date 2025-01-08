@@ -24,6 +24,7 @@ class members:
         self.string = element_s
         self.inverse : object
         self.cygroup()                                                          
+        self.coset_index = 0
 
 
     @custom_cache
@@ -70,7 +71,7 @@ class members:
             if prod == self._id:
                 self.order = n
                 self.inverse = _maptostr(self.noch, temp)
-            self.cycles.append(prod)
+            self.cycles.append(_maptostr(prod))
             n+=1
             temp = prod
             prod = self@prod

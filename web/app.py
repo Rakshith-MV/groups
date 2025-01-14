@@ -85,6 +85,7 @@ dn_details = {}
 
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
+    print("Entered")
     form = integer_mod()  # Define the form here
     global int_data
     global int_details
@@ -143,10 +144,43 @@ def integer():
                                graph=0)
 
 @app.route(
+        '/dihedral/',
+        methods=['GET', 'POST']
+)
+def dihedral():
+    print("Entered")
+    form = dn()
+    global dn_details
+    global dn_data
+    if request.method == 'POST':
+        if (form.number != None):
+            try:
+                dn_data = [int(request.form['number']),str(request.form['graph'])]  # Convert to integer
+                dn_details = create('D',
+                                 size= dn_data[0])
+                colors = [choose() for i in range(len(dn_details['elements']))]
+                k = iter(colors)
+                for i in dn_details['elements']:
+                    i.color = k.__next__()
+                return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
+            except ValueError:
+                flash('Invalid input for mod_num. Please enter a valid number.', 'error')
+    form.number.data = dn_data[0]
+    form.graph.data = dn_data[1]
+
+    return render_template('dihedral.html', 
+                           title='dihedral-groups',
+                             form=form, 
+                               data=dn_data,
+                               details=dn_details)
+
+ 
+@app.route(
         '/symmetric/',
         methods=['GET', 'POST']
 )
 def symmetric():
+    print("Entered")
     form = sym()
     global sym_details
     global sym_data
@@ -176,36 +210,6 @@ def symmetric():
                              form=form, 
                                data=sym_data
                                ,details=sym_details)
-
-@app.route(
-        '/dihedral/',
-        methods=['GET', 'POST']
-)
-def dihedral():
-    form = dn()
-    global dn_details
-    global dn_data
-    if request.method == 'POST':
-        if (form.number != None):
-            try:
-                dn_data = [int(request.form['number']),str(request.form['graph'])]  # Convert to integer
-                dn_details = create('D',
-                                 size= dn_data[0])
-                colors = [choose() for i in range(len(dn_details['elements']))]
-                k = iter(colors)
-                for i in dn_details['elements']:
-                    i.color = k.__next__()
-                return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
-            except ValueError:
-                flash('Invalid input for mod_num. Please enter a valid number.', 'error')
-    form.number.data = dn_data[0]
-    form.graph.data = dn_data[1]
-
-    return render_template('dihedral.html', 
-                           title='dihedral-groups',
-                             form=form, 
-                               data=dn_data,
-                               details=dn_details)
 
 
 if __name__ == '__main__':

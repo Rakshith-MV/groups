@@ -4,21 +4,32 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     const lines = [];
     const nodeLabels = [];
 
-    // Sample input data            
-    // const vertices = [
-    //     [0, 0, 1],
-    //     [0, 1, 0],
-    //     [0, 0, -1],
-    //     [1, 0, 0],
-    //     [0,0,0]
-    // ];
+    // Sample input data
+    // if (vertex === null && edge === null && names === null) {
+    //     // Your code here
+    //     const vertices = [
+    //         [0, 0, 1],
+    //         [0, 1, 0],
+    //         [0, 0, -1],
+    //         [1, 0, 0],
+    //         [0,0,0]
+    //     ];
+    
+    //     const edges = {
+    //         0: [1, 2,3,4],
+    //         1: [2, 3,4],
+    //         2: [3,4],
+    //         3: [4]
+    //     };
+    //     const names = [
+    //         "A",
+    //         "B",
+    //         "C",
+    //         "D",
+    //         "E"
+    //     ];
+    // }
 
-    // const edges = {
-    //     0: [1, 2,3,4],
-    //     1: [2, 3,4],
-    //     2: [3,4],
-    //     3: [4]
-    // };
     const vertices = vertex;
     const edges = edge;
 

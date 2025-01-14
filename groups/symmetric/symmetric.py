@@ -66,12 +66,13 @@ class members:
         """
         prod = self.maps
         n = 1
+        print("ID : ", self._id)
         temp = prod
-        while(prod not in self.cycles):   
+        while(_maptostr(self.noch, prod) not in self.cycles):   
             if prod == self._id:
                 self.order = n
                 self.inverse = _maptostr(self.noch, temp)
-            self.cycles.append(_maptostr(prod))
+            self.cycles.append(_maptostr(self.noch,prod))
             n+=1
             temp = prod
             prod = self@prod

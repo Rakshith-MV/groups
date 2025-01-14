@@ -29,7 +29,7 @@
 
 {% block right_side %}
     <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
-        <h1 align="center">
+        <h1 align="center" style="background-color: #f7dada;">
             D<sub> {{ data[0] }}</sub>
         </h1>  
         {% if data[1] == 'table' %}
@@ -61,23 +61,25 @@
                 </table>
             </div>
         {% else %}
-            
-        <script>
-            const vertices = {{ details.vertices|tojson }};
-            const edges = {{ details.edges|tojson }};
-            const names = {{ details.choices|tojson }};
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('graph-container-di');
-                stupid_animate(
-                    container.clientWidth,
-                    container.clientHeight,
-                    container,
-                    vertices,
-                    edges,
-                    names
-                );
-            });
-        </script> 
+            <script>
+                const vertices = {{ details.vertices|tojson }};
+                const edges = {{ details.edges|tojson }};
+                const names = {{ details.choices|tojson }};
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    const container = document.getElementById('right-side-content');
+                    const rect = container.getBoundingClientRect();
+                    console.log(rect.width, rect.height, rect.left);
+                    stupid_animate(
+                        rect.width,
+                        rect.height,
+                        container,
+                        vertices,
+                        edges,
+                        names
+                    );
+                });
+            </script> 
         {% endif %}
     </div>       
 {% endblock %}

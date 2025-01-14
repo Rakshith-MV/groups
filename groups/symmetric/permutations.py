@@ -76,7 +76,7 @@ class Pgroup():
     def cosets_of_cycles(self,
                          i):
         k = set()
-        sub = [self.mapi.cycles
+        sub = [self.mapi.cycles]
         k.add(sub)
         self.clear_coset_data(k[-1])
         for j in self.elements:

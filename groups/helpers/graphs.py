@@ -1,7 +1,6 @@
 from functools import cache
 from math import e, pi, sin, cos, sqrt
 import numpy as np
-from pkg_resources import ResolutionError
 
 def sub(x:list,
         y:list):

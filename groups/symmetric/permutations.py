@@ -1,4 +1,3 @@
-from tabulate import tabulate
 from .symmetric import members as mm #
 from itertools import permutations
 from functools import cache

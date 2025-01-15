@@ -15,12 +15,8 @@ Ofcourse if the group is cyclic then.
 
 
 from functools import cache
-from logging import raiseExceptions
 import math as mt
-from warnings import catch_warnings
 
-from matplotlib.streamplot import OutOfBounds
-from networkx import edges
 from ..helpers.Decorators import powerset, prime_decomposition
 from ..helpers.graphs import circle
 import random

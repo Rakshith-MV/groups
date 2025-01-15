@@ -1,6 +1,7 @@
 from math import factorial
 from tkinter import NO
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from sympy import proper_divisor_count
 from wtforms import SelectField
 from pyscripts.colors import choose 
 import os
@@ -74,94 +75,99 @@ def home():
 #int_data = kind of group, range of data, graph or table,
 int_data = ['+',4,'table','0']
 int_details = {}
+int_previous = []
+int_selected_generators = []
+
 #sym_data = ['type',number, graph]
 sym_data = ['S_n',3,'table',None]
 sym_details = {}
+sym_previous = []
+sym_selected_generators = []
+
 
 dn_data = [3,'table']
 dn_details = {}
-
- 
+dn_dn_selected_generators = ['f','r^1']
+dn_previous = [] 
 
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
-    print("Entered")
     form = integer_mod()  # Define the form here
     global int_data
     global int_details
+    global int_selected_generators
+    global int_previous
     if request.method == 'POST':
         if (form.mod_num != None):
             try:
-                print("entered try")
-                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
-                if int_data[2] == 'table':
-                    int_details = create('Z',
-                                    character=str(int_data[0]),
-                                    size=int(int_data[1]))
-                    colors = [choose() for i in range(int_data[1])]
-                    k = iter(colors)
-                    for i in int_details['elements']:
-                        i.color = k.__next__()
-                    print("COlors changed")
-                    return redirect(url_for('integer'),code=302)
+                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
                 try:
-                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form['generator'] ]
-                    gen = int(int_data[3])
-                    int_details = create('Z',
+                    print("Entered second try")
+                    if int_previous[1] == int_data[1]:
+                        print(int_data[-1])
+                        if int_data[-1] != []:
+                            print("Entered if loo[]")
+                            int_selected_generators = int_data[-1]
+                    else:
+                        print("change values")
+                        int_selected_generators = ['1']
+                except:
+                    int_selected_generators = ['1']
+                int_details = create('Z',
                                     character=str(int_data[0]),
                                     size=int(int_data[1]),
-                                    gen=gen)
-                    print("updating values")    
-                    form.mod_num.data = int(int_data[1])
-                    form.operation.data = int_data[0]
-                    form.graph.data = int_data[2]
-                    form.generator.dat = int_data[3]
-                    print(form.mod_num.data, form.operation.data, form.graph.data, form.generator.data)                                
-                    return redirect(url_for('integer'),code=302)
-                except:
-                    print("no generator")
-                    int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph'])]
-                    int_details = create('Z',
-                                         character=int_data[0],
-                                         size=int_data[1],
-                                         gen=None)
-                    return redirect(url_for('integer'))
-
-
-            except ValueError:
+                                    gen=int_selected_generators)
+                if int_data[2] == 'table':
+                    colors = [choose() for i in range(int_data[1])]
+                    for i, j in zip(int_details['elements'],colors):
+                        i.color = j 
+                int_previous = int_data.copy()
+                return redirect(url_for('integer'),code=302)
+            except ValueError:    
+                print("In exception")  
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
-
-    
-    form.mod_num.data = int(int_data[1])
+    form.mod_num.data = int(int_data[1])    
     form.operation.data = int_data[0]
     form.graph.data = int_data[2]
-    
-    return render_template('integerm.html', 
-                           title='Integer_mod_groups',
-                             form=form, 
-                               data=int_data,
-                               details=int_details,
-                               graph=0)
-
+    return render_template('integerm.html',
+                            title='Integer_mod_groups',
+                            form=form,
+                            data=int_data,
+                            details=int_details,
+                            graph=0)
+                                  
 @app.route(
         '/dihedral/',
         methods=['GET', 'POST']
 )
 def dihedral():
-    print("Entered")
+    
     form = dn()
     global dn_details
     global dn_data
+    global dn_selected_generators    #is this necessary 
+    global dn_previous
     if request.method == 'POST':
         if (form.number != None):
+            # dn_data = [int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
             try:
-                dn_data = [int(request.form['number']),str(request.form['graph'])]  # Convert to integer
+                dn_data = [int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
+                try:
+                    if dn_previous[0] == dn_data[0]:
+                        if dn_data[-1] != []:
+                            dn_selected_generators = dn_data[-1]
+                    else:
+                        dn_selected_generators = ['r^1','f']
+                except:
+                    dn_selected_generators = ['r^1','f']                    
                 dn_details = create('D',
-                                 size= dn_data[0])
-                colors = [choose() for i in range(len(dn_details['elements']))]
-                k = iter(colors)
-                for i in dn_details['elements']:
-                    i.color = k.__next__()
+                                 size= dn_data[0],
+                                 gen=dn_selected_generators)
+                if dn_data[1] == 'table':
+                    colors = [choose() for i in range(len(dn_details['elements']))]
+                    for i,j in zip(dn_details['elements'],colors):
+                        i.color = j
+                dn_previous = dn_data.copy()
                 return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
@@ -213,4 +219,5 @@ def symmetric():
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True,
+            host='0.0.0.0')

@@ -20,6 +20,7 @@ import math as mt
 from warnings import catch_warnings
 
 from matplotlib.streamplot import OutOfBounds
+from networkx import edges
 from ..helpers.Decorators import powerset, prime_decomposition
 from ..helpers.graphs import circle
 import random
@@ -48,6 +49,11 @@ class members:
         self.op = operation
         self.order = 0; self.inverse = id
 
+    def __matmul__(self,
+                     i:int):
+        if self.op == '*':  
+            return members((self.element*i)%self.group_order,self.group_order,self.id, self.op) 
+        return members((self.element+i)%self.group_order,self.group_order,self.id, self.op)
     def __mul__(self,
                 i:any
                ):
@@ -75,7 +81,7 @@ class members:
     def __str__(self) -> str:
         return str(self.element)
 
-@cache
+# @cache   I don't know how effective this was or is.
 class modulo:
     """
     A modulo group of order n, with operation + or *.
@@ -93,7 +99,7 @@ class modulo:
     def __init__(self,
                  n:int,
                  operation:chr="+",
-                 generator:int=None
+                 generator:int=[]
                  ) -> None:
         self.op = operation
         if operation == "*":
@@ -141,9 +147,9 @@ class modulo:
                    ):
         self.inverses()
         if self.op == '*':
-            self.generators = self.elements
+            self.gen = self.elements
             return
-        self.generators =  [i for i in self.elements if i.order == len(self.elements)]
+        self.gen =  [i for i in self.elements if i.order == len(self.elements)]
     
     def subgroups(
             self
@@ -186,28 +192,16 @@ class modulo:
     #         subgroup.add(j)
 
     def edges_and_vertices(self,
-                           element=None
+                           generator=[]
                             ):
+        if generator == []:
+            generator.append(random.choice(self.elements))
+        self.generators = generator
         self.edges = {}
-        try:
-            if element == None or self.op == '*':
-                i = random.choice(self.elements)
-                cycles = self._cycles(i)
-            else:
-                cycles = self._sub_cycle()    
-        except:
-            i = random.choice(self.elements)
-            cycles = self._cycles(i)                
-        for j in range(len(cycles[:-1])):
-            self.edges[self.maps[cycles[j]]] = [self.maps[cycles[j+1]]]
-            self.edges[self.maps[cycles[-1]]] = [self.maps[cycles[0]]]
-
-
+        for i in self.elements:
+            self.edges[self.maps[i]] = [self.maps[i@int(j)] for j in self.generators]
         self.vertices = circle(self.group_order)
-
-        
-
-
+        print(self.vertices, self.edges)
 
     def __len__(self) -> int:
         return len(self.elements)
@@ -217,7 +211,7 @@ class modulo:
         return self.elements[n]
     
     def __str__(self) -> str:
-        return [i.__str__() for i in self.elements]    
+        return [i.__str__() for i in self.elements]
         
 if __name__ == "__main__":
     k = modulo(10,'+')

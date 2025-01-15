@@ -1,4 +1,4 @@
-function stupid_animate(width, height, container, vertex, edge, names) {
+function stupid_animate(container, vertex, edge, names, gen) {
     let scene, camera, renderer, orbit, dragControls;
     const nodes = [];
     const lines = [];
@@ -7,7 +7,7 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     // Sample input data
     // if (vertex === null && edge === null && names === null) {
     //     // Your code here
-    //     const vertices = [
+    //     const vertex = [
     //         [0, 0, 1],
     //         [0, 1, 0],
     //         [0, 0, -1],
@@ -15,7 +15,7 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     //         [0,0,0]
     //     ];
     
-    //     const edges = {
+    //     const edge = {
     //         0: [1, 2,3,4],
     //         1: [2, 3,4],
     //         2: [3,4],
@@ -30,23 +30,20 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     //     ];
     // }
 
-    const vertices = vertex;
-    const edges = edge;
-
     function init() {
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf7dada);
         
         camera = new THREE.PerspectiveCamera(
             30,
-            width / height,
+            container.clientWidth / container.clientHeight,
             1,
             100
         );
         camera.position.z = 5;
         
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
+        renderer.setSize(container.clientWidth, container.clientHeight);
         
         container.innerHTML = '';
         container.appendChild(renderer.domElement);
@@ -87,9 +84,26 @@ function stupid_animate(width, height, container, vertex, edge, names) {
             });
         });
 
-        // Create nodes (vertices)
-        for (let i = 0; i < vertices.length; i++) {
-            const position = vertices[i];
+        // Add generator text display
+        if (gen && gen.length > 0) {
+            const genDiv = document.createElement('div');
+            genDiv.style.position = 'absolute';
+            genDiv.style.left = '10px';
+            genDiv.style.top = '10px';
+            genDiv.style.color = 'black';
+            genDiv.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+            genDiv.style.padding = '5px';
+            genDiv.style.borderRadius = '5px';
+            genDiv.style.fontFamily = 'Arial, sans-serif';
+            genDiv.style.zIndex = '1000';
+            genDiv.style.fontSize= '20px';
+            genDiv.innerHTML = `Generators: ${gen.join(', ')}`;
+            container.appendChild(genDiv);
+        }
+
+        // Create nodes (vertex)
+        for (let i = 0; i < vertex.length; i++) {
+            const position = vertex[i];
             const geometry = new THREE.SphereGeometry(0.1, 32, 32);
             const material = new THREE.MeshStandardMaterial({ 
                 color: 0xff69b4,
@@ -128,13 +142,13 @@ function stupid_animate(width, height, container, vertex, edge, names) {
             nodes.push(sphere);
         }
 
-        // Create edges
-        Object.entries(edges).forEach(([from, tos]) => {
+        // Create edge
+        Object.entries(edge).forEach(([from, tos]) => {
             tos.forEach(to => {
                 // Create the line
                 const points = [
-                    new THREE.Vector3(...vertices[from]),
-                    new THREE.Vector3(...vertices[to])
+                    new THREE.Vector3(...vertex[from]),
+                    new THREE.Vector3(...vertex[to])
                 ];
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
                 const material = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -143,15 +157,15 @@ function stupid_animate(width, height, container, vertex, edge, names) {
 
                 // Create arrow head with smaller dimensions
                 const direction = new THREE.Vector3(
-                    vertices[to][0] - vertices[from][0],
-                    vertices[to][1] - vertices[from][1],
-                    vertices[to][2] - vertices[from][2]
+                    vertex[to][0] - vertex[from][0],
+                    vertex[to][1] - vertex[from][1],
+                    vertex[to][2] - vertex[from][2]
                 ).normalize();
 
                 const arrowPosition = new THREE.Vector3(
-                    vertices[to][0] - direction.x * 0.15,
-                    vertices[to][1] - direction.y * 0.15,
-                    vertices[to][2] - direction.z * 0.15
+                    vertex[to][0] - direction.x * 0.15,
+                    vertex[to][1] - direction.y * 0.15,
+                    vertex[to][2] - direction.z * 0.15
                 );
 
                 const arrowGeometry = new THREE.ConeGeometry(0.03, 0.1, 8);
@@ -195,7 +209,7 @@ function stupid_animate(width, height, container, vertex, edge, names) {
         });
         
         dragControls.addEventListener('drag', function(event) {
-            updateEdges();
+            updateedge();
             // Update text position
             const nodeIndex = nodes.indexOf(event.object);
             if (nodeIndex !== -1 && nodeLabels[nodeIndex]) {
@@ -205,10 +219,16 @@ function stupid_animate(width, height, container, vertex, edge, names) {
         });
 
         // Handle window resizing
-        // window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize, false);
+
+        // Add resize observer
+        const resizeObserver = new ResizeObserver(() => {
+            onWindowResize();
+        });
+        resizeObserver.observe(container);
     }
 
-    function updateEdges() {
+    function updateedge() {
         lines.forEach(({line, arrow, startNodeIndex, endNodeIndex}) => {
             const startNode = nodes[startNodeIndex];
             const endNode = nodes[endNodeIndex];
@@ -251,12 +271,10 @@ function stupid_animate(width, height, container, vertex, edge, names) {
     }
 
     function onWindowResize() {
-        const container = document.getElementById('graph-container');
-        const rect = container.getBoundingClientRect();
-        
-        camera.aspect = rect.width / rect.height;
+        camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize(rect.width, rect.height);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);  // Added for better resolution
     }
 
     function animate() {

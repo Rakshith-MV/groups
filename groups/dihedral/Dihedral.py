@@ -1,5 +1,6 @@
 import math
 from functools import cache
+from unittest import skip
 from ..helpers.graphs import circle
 """
 2 operations, one cyclic the other flips, 
@@ -82,7 +83,8 @@ class members:
 
 class Dn:
     def __init__(self,
-                 n) -> None:
+                 n,
+                 gen) -> None:
         self.n = n
         self.elements = [members(i,j,self.n) for i in range(2) for j in range(self.n)]
         self.conjugacy_classes = set()
@@ -90,9 +92,8 @@ class Dn:
         for i in self.elements:
             i._cycle_inverse()
         self.maps = dict(zip([(i,j) for i in range(2) for j in range(self.n)], range(2*self.n)))
-        self.edges_and_vertices()
-
-
+        self.edges_and_vertices(gen)
+        self.generators = gen
     def compute_conjugacy_classes(self
                           ):
         for i in self.elements:
@@ -120,12 +121,18 @@ class Dn:
 
     def edges_and_vertices(self,
                         gen=['fr0','r1']):   #format must fr^n or r^n, r must be present
+        print(gen)
         self.edges = dict(zip(range(2*self.n),[[] for i in range(2*self.n)]))
         self.vertices = [*circle(self.n,0.3),*circle(self.n,1)]
         generators = []
         for i in gen:
+            if 'e' in i:
+                continue
             if 'f' in i:
-                generators.append(members(1,int(i[-1]),self.n))
+                if 'r' in i:
+                    generators.append(members(1,int(i[-1]),self.n))
+                else:
+                    generators.append(members(1,0,self.n))
             else:
                 generators.append(members(0,int(i[-1]),self.n))
 

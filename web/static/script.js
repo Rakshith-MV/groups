@@ -84,4 +84,4 @@ function showInfoCard(event, inverse, order) {
             document.removeEventListener('click', closeCard);
         }
     });
-}
+    }

@@ -66,7 +66,6 @@ class members:
         """
         prod = self.maps
         n = 1
-        print("ID : ", self._id)
         temp = prod
         while(_maptostr(self.noch, prod) not in self.cycles):   
             if prod == self._id:

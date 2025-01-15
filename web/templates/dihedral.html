@@ -13,13 +13,14 @@
 
 
 {% block left_side %}
+
 <form method="POST" id="groupForm">
     {{ form.number }} {{ form.graph }}
     {% if form.graph.data == 'graph' %}
         {% for i in details.elements %}
             {% set _ = form.generator.choices.append(i.__str__()) %}
         {% endfor %}
-        <p style="display: inline; color: black; font-size: large;">Choose generator : </p> {{ form.generator }}       
+        <p style="display: inline; color: black; font-size: large;">Choose generator : {{ form.generator }} </p> 
     {% endif %}
     {{ form.submit }}
 </form>
@@ -31,7 +32,7 @@
     <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
         <h1 align="center" style="background-color: #f7dada;">
             D<sub> {{ data[0] }}</sub>
-        </h1>  
+        </h1> 
         {% if data[1] == 'table' %}
             <div id="tableView">
                 <table style="margin-left: auto; margin-right: auto;"> 
@@ -61,22 +62,21 @@
                 </table>
             </div>
         {% else %}
+            <div id="graph-container" style="width: 100%; height: calc(100% - 50px); position: absolute; top: 50px; left: 0; margin: 0; padding: 0;"></div>
             <script>
                 const vertices = {{ details.vertices|tojson }};
                 const edges = {{ details.edges|tojson }};
                 const names = {{ details.choices|tojson }};
-                
+                const generator = {{ details.gen|tojson }};
                 document.addEventListener('DOMContentLoaded', function() {
-                    const container = document.getElementById('right-side-content');
+                    const container = document.getElementById('graph-container');
                     const rect = container.getBoundingClientRect();
-                    console.log(rect.width, rect.height, rect.left);
                     stupid_animate(
-                        rect.width,
-                        rect.height,
                         container,
                         vertices,
                         edges,
-                        names
+                        names,
+                        generator
                     );
                 });
             </script> 

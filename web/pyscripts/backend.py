@@ -14,7 +14,8 @@ def create(choice,*,character=None,size=None,gen=None):
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
                 'edges': group.edges,
-                'choices': group.__str__()  
+                'choices': group.__str__(),
+                'gen':group.generators 
             }
         case 'P':
             if character == 'S_n':
@@ -30,11 +31,12 @@ def create(choice,*,character=None,size=None,gen=None):
 
             }
         case 'D':
-            group = gp.Dn(size)
+            group = gp.Dn(size, gen=gen)
             return {
                 'elements': group.elements,
                 'cayleys': group.cayleys(),
                 # 'conjugacy': group.compute_conjugacy_classes()
+                'gen':group.generators,
                 'vertices': group.vertices,
                 'edges':group.edges,
                 'choices':group.__str__()

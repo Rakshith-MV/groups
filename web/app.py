@@ -1,15 +1,10 @@
 from math import factorial
-from tkinter import NO
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from sympy import proper_divisor_count
-from wtforms import SelectField
 from pyscripts.colors import choose 
 import os
 from werkzeug.utils import secure_filename
 from pyscripts.forms import integer_mod, sym, dn
 from pyscripts.backend import create
-import random
-import groups as gp
 
 app = Flask(__name__)
 

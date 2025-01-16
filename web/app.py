@@ -1,4 +1,5 @@
 from math import factorial
+from turtle import title
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from pyscripts.colors import choose 
 import os
@@ -57,7 +58,7 @@ groups = [
         "description": "General group theory",
         "color": "#1DA1F2",
         "image": "symetric.png",
-        "page": "integer"
+        "page": "product"
     }
 ]
 
@@ -177,7 +178,6 @@ def dihedral():
         methods=['GET', 'POST']
 )
 def symmetric():
-    print("Entered")
     form = sym()
     global sym_details
     global sym_data
@@ -190,10 +190,8 @@ def symmetric():
                                  size = sym_data[1])
                 colors = [choose() for i in range(len(sym_details['elements']))]
                 k = iter(colors)
-
                 for i in sym_details['elements']:
                     i.color = k.__next__()
-
                 return redirect(url_for('symmetric'),code= 302)  # Redirect to the same page to see updated data
             except ValueError:
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
@@ -207,6 +205,15 @@ def symmetric():
                              form=form, 
                                data=sym_data
                                ,details=sym_details)
+
+
+@app.route(
+        '/product/',
+        methods=['GET', 'POST']
+)
+def product():
+    return render_template('product.html',
+                           title='product-groups')
 
 
 if __name__ == '__main__':

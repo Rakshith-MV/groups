@@ -16,11 +16,7 @@
     {{ form.operation }} {{ form.number }}
     {{ form.graph }}
     {% if form.graph.data == 'graph' %}
-        {{ form.update(data[3]) }}
-        {% for i in details.elements %}
-            {% set _ = form.generator.choice.append(i.__str__()) %}
-        {% endfor %}
-        <p style="display: inline; color: black; font-size: large;">Choose generator</p>
+        
     {% endif %}
     {{ form.submit }}
 
@@ -30,8 +26,8 @@
 
 
     
-{% block right_side %}
-    <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
+{% block right_side %}  
+<div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
         {% if data[0] == 'S_n' %}
             <h1 align="center">
                 S<sub> {{ data[1] }}</sub>
@@ -60,21 +56,7 @@
                 {% endif %}
             </div>
         {% else %}
-        <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('graph-container');
-                const rect = container.getBoundingClientRect(); 
-                stupid_animate(
-                    rect.width,
-                    rect.height,
-                    container,  // Pass the container element instead of coordinates
-                );
-            });
-        </script>
-        
-
+            <p style="font-weight: bolder;">In progress</p>
         {% endif %}
     </div>
 {% endblock %}

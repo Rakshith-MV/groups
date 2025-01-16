@@ -21,3 +21,25 @@ Author: RakshithV <werakshith@gmail.com>
 Date:   Sat Dec 7 07:15:21 2024 +0530
 
     Removed compiled stuff.
+
+
+<!-- {{ form.update(data[3]) }}
+        {% for i in details.elements %}
+            {% set _ = form.generator.choice.append(i.__str__()) %}
+        {% endfor %}
+        <p style="display: inline; color: black; font-size: large;">Choose generator</p> -->
+        
+
+<div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; display: block;"></div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('graph-container');
+                const rect = container.getBoundingClientRect(); 
+                stupid_animate(
+                    rect.width,
+                    rect.height,
+                    container,  // Pass the container element instead of coordinates
+                );
+            });
+        </script>

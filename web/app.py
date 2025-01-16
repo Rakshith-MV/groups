@@ -97,15 +97,13 @@ def integer():
             try:
                 int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
                 try:
-                    print("Entered second try")
-                    if int_previous[1] == int_data[1]:
-                        print(int_data[-1])
+                    if int_previous[1] == int_data[1] or int_previous[0] != int_data[0]:
+                        int_selected_generators = ['1'] if int_data[0] == '+' else []
                         if int_data[-1] != []:
-                            print("Entered if loo[]")
                             int_selected_generators = int_data[-1]
                     else:
-                        print("change values")
                         int_selected_generators = ['1']
+                    
                 except:
                     int_selected_generators = ['1']
                 int_details = create('Z',
@@ -118,8 +116,7 @@ def integer():
                         i.color = j 
                 int_previous = int_data.copy()
                 return redirect(url_for('integer'),code=302)
-            except ValueError:    
-                print("In exception")  
+            except ValueError:      
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
     form.mod_num.data = int(int_data[1])    
     form.operation.data = int_data[0]
@@ -130,13 +127,12 @@ def integer():
                             data=int_data,
                             details=int_details,
                             graph=0)
-                                  
+
 @app.route(
         '/dihedral/',
         methods=['GET', 'POST']
 )
-def dihedral():
-    
+def dihedral():    
     form = dn()
     global dn_details
     global dn_data

@@ -191,13 +191,12 @@ class modulo:
                            generator=[]
                             ):
         if generator == []:
-            generator.append(random.choice(self.elements))
+            generator = [str(self.maps[random.choice(self.elements[1:])])]
         self.generators = generator
         self.edges = {}
         for i in self.elements:
             self.edges[self.maps[i]] = [self.maps[i@int(j)] for j in self.generators]
         self.vertices = circle(self.group_order)
-        print(self.vertices, self.edges)
 
     def __len__(self) -> int:
         return len(self.elements)

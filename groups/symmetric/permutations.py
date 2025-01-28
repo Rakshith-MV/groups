@@ -1,3 +1,4 @@
+from ast import main
 from .symmetric import members as mm #
 from itertools import permutations
 from functools import cache
@@ -32,6 +33,7 @@ class Pgroup():
                  Alt :bool = 0):      #Noch number of characters
 
         
+        self.max = 0
         self.id = ...   #Take care of this 
         self.val = 0
         self._all = [str(i) for i in range(Noch)]
@@ -43,7 +45,6 @@ class Pgroup():
         val +=1
         
     
-    
     def _create_elements(self,
                          Alt: bool
                      )->None:
@@ -52,9 +53,9 @@ class Pgroup():
         for i in els:
             temp.append(mm(self.group_order, dict(zip(self._all,[str(j) for j in i]))))
             self.val += 1
+            self.max = max(temp[-1].order,self.max)
 
         if Alt == 1:
-            print("In even")
             for i in temp:
                 if even(i) == True:
                     self.elements.append(i)
@@ -64,6 +65,7 @@ class Pgroup():
         for i in self.elements:
             i.inv = mm(self.group_order, i.inverse, )                   #Create instances by referencing to existing instance.    
 
+    #Don't know if this is necessary, but it's a good idea to have it.
     def clear_coset_data(self,
                         i:object = None): 
         for j in i:
@@ -121,8 +123,36 @@ class Pgroup():
             if k not in l:
                 l.add(k)
         return l
+    
 
-                    
+    def cosets(self,
+               sub):
+        """
+        Given a subgroup find the cosets(let's start with right cosets)
+        """
+
+    def main_cycle_and_cosets(self):
+        """
+        Find the main cycle and the cosets of the main cycle.
+        """
+        for i in self.elements:
+            if i.order == self.max:
+                main_element = i
+                break
+        cycles = [self.cycles(main_element)]
+
+    def edges_and_vertices(self,
+                            generators
+                            ):
+        """
+        The idea here would be to arrange the elements in such a way that, the main subgroup is generated to form the main cycle.
+        rest of the elements forms the cosets of these elements.
+        """
+        #Assume just one generators per selection.
+        #we can bring subgroups to picture as well
+        main_cycle = generators.cyc
+        
+
     def __getitem__(self,
                     index):
         """
@@ -147,24 +177,6 @@ class Pgroup():
             table.append(temp)
         return table
 
-        
-
-    def cosets(self,
-               sub):
-        """
-        Given a subgroup find the cosets(let's start with right cosets)
-        """
-
-    def edges_and_vertices(self
-                           ):
-        max_element, max_index = 0,0
-        for i in self.elements:
-            if i.order > len(i.cycles):
-                max_element,max_index = i,len(i.cycles)
-        vertices = circle(max_index)
-        for el,pos in zip(i.cycles,vertices):
-            el.position = pos
-        
     def __str__(self
                 )-> str:
         """
@@ -179,6 +191,6 @@ class Pgroup():
         return s
 
 if __name__ == "__main__":
-    k = Pgroup(3)
+    k = Pgroup(2)
     for i in k.elements:
-        print(i,str(i.inverse),type(i.inverse))
+        print(i.cycles())

@@ -3,7 +3,6 @@ from turtle import title
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from pyscripts.colors import choose 
 import os
-from werkzeug.utils import secure_filename
 from pyscripts.forms import integer_mod, sym, dn
 from pyscripts.backend import create
 
@@ -199,7 +198,7 @@ def symmetric():
     form.operation.data = sym_data[0]
     form.number.data = sym_data[1]
     form.graph.data = sym_data[2]
-    # form.generator.data = sym_data[3]
+    # form.generator.da ta = sym_data[3]
     return render_template('sym.html', 
                            title='symmetric-groups',
                              form=form, 

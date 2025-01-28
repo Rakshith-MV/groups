@@ -84,7 +84,7 @@ class members:
 class Dn:
     def __init__(self,
                  n,
-                 gen) -> None:
+                 gen=['r^0','f']) -> None:
         self.n = n
         self.elements = [members(i,j,self.n) for i in range(2) for j in range(self.n)]
         self.conjugacy_classes = set()
@@ -120,8 +120,7 @@ class Dn:
 
 
     def edges_and_vertices(self,
-                        gen=['fr0','r1']):   #format must fr^n or r^n, r must be present
-        print(gen)
+                    gen=['fr0','r1']):   #format must fr^n or r^n, r must be present    
         self.edges = dict(zip(range(2*self.n),[[] for i in range(2*self.n)]))
         self.vertices = [*circle(self.n,0.3),*circle(self.n,1)]
         generators = []

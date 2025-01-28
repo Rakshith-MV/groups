@@ -26,7 +26,6 @@ class members:
         self.cygroup()                                                          
         self.coset_index = 0
 
-
     @custom_cache
     def __mul__(self, 
                 sec:object
@@ -104,5 +103,6 @@ class members:
         return s                      
     
     
+
 if __name__ == "__main__":
     ...      

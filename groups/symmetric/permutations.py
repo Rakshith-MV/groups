@@ -1,6 +1,7 @@
 from ast import main
+from enum import member
 from .symmetric import members as mm #
-from itertools import permutations
+from itertools import cycle, permutations
 from functools import cache
 from ..helpers.Decorators import even    #
 from ..helpers.graphs import circle
@@ -124,12 +125,11 @@ class Pgroup():
                 l.add(k)
         return l
     
-
-    def cosets(self,
-               sub):
-        """
-        Given a subgroup find the cosets(let's start with right cosets)
-        """
+    def coset(subs:list,
+              el:member):
+        temp = []
+        for i in subs:
+            temp.append(i*el)
 
     def main_cycle_and_cosets(self):
         """
@@ -139,7 +139,12 @@ class Pgroup():
             if i.order == self.max:
                 main_element = i
                 break
-        cycles = [self.cycles(main_element)]
+        cycles = set(main_element.cycles)
+        count = len(cycles[-1])
+        k = iter(self.elements)
+        while count<self.group_order:
+            self.coset(cycles[0],k.__next__())
+
 
     def edges_and_vertices(self,
                             generators

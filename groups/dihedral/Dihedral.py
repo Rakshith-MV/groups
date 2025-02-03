@@ -105,13 +105,7 @@ class Dn:
 
     def cayleys(self
                 )->list:
-        self.table = []
-        for i in self.elements:
-            temp = []
-            for j in self.elements:
-                temp.append(i*j)
-            self.table.append(temp)
-        return self.table
+        return [[i*j for i in self.elements] for j in self.elements]
     
     def cycles(self,
                j

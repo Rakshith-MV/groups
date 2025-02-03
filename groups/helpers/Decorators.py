@@ -72,12 +72,10 @@ def _strtomap(n:int,
     """
     values = [str(i) for i in range(n)]
     D = dict(zip(values, values))
-    print(element,element.split(','))
     for temp in element.split(','):
         l = len(temp)
         for i in range(l):
             D[temp[i]] = temp[(i+1)%l]
-    print(D)
     return D
 
 def _maptostr(n,
@@ -106,7 +104,6 @@ def _maptostr(n,
         except:
             assert ValueError ("Doesn't form a proper cycles. ")
             return None
-    
     return output_str.rstrip(',')
 
 def even(
@@ -172,4 +169,4 @@ def prime_decomposition(
     return factors
     
 if __name__ == "__main__":
-    _strtomap(7,'012,34,56')
+    _maptostr(3,{'2': '0', '0': '1', '1': '2'})

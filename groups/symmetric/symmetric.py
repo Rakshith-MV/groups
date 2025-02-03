@@ -4,7 +4,7 @@ All members are taken to the right side, as in, if a*b then it's a[b[i]]
 """
 from functools import cache, wraps
 from ..helpers.Decorators import custom_cache, class_cache, _maptostr  
-# from .colors import choose
+
 
 @class_cache
 class members:
@@ -85,7 +85,6 @@ class members:
         self.trans = []
         for i in self.string[:-1]:
             self.trans.append(self.string[-1]+i)
-        print(self.trans)
         if len(self.trans)%2 == 0:
             return True
         return False

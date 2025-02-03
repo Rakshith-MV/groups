@@ -72,10 +72,12 @@ def _strtomap(n:int,
     """
     values = [str(i) for i in range(n)]
     D = dict(zip(values, values))
-    for i in element:
-        l = len(i)
-        for k in range(l):
-            D[i[k]] = i[(k+1)%l]
+    print(element,element.split(','))
+    for temp in element.split(','):
+        l = len(temp)
+        for i in range(l):
+            D[temp[i]] = temp[(i+1)%l]
+    print(D)
     return D
 
 def _maptostr(n,
@@ -169,3 +171,5 @@ def prime_decomposition(
             i+=1
     return factors
     
+if __name__ == "__main__":
+    _strtomap(7,'012,34,56')

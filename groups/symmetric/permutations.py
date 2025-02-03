@@ -125,11 +125,13 @@ class Pgroup():
                 l.add(k)
         return l
     
-    def coset(subs:list,
-              el:member):
+    def coset(self,
+              subs:list,
+              el):
         temp = []
         for i in subs:
             temp.append(i*el)
+        return temp
 
     def main_cycle_and_cosets(self):
         """
@@ -139,13 +141,12 @@ class Pgroup():
             if i.order == self.max:
                 main_element = i
                 break
-        cycles = set(main_element.cycles)
-        count = len(cycles[-1])
-        k = iter(self.elements)
-        while count<self.group_order:
-            self.coset(cycles[0],k.__next__())
-
-
+        main_cycle = main_element.cycles
+        cycles = set(main_cycle)
+        for k in self.elements:                  #I should be able to optimize this!!!
+            temp = self.coset(main_cycle,k)
+            cycles.add(temp)
+        print(cycles)
     def edges_and_vertices(self,
                             generators
                             ):

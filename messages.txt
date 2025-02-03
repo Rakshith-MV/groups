@@ -11,3 +11,7 @@ symmetric groups.
 
 2/2/2025
 Rewrite the symmetric groups, make sure all multiplication returns members.
+done...
+
+  Product groups, One idea is to create a much broader class, where I should be able to compare groups. Might have to rewrite the whole classes, probably worth:/
+  vertices must be assigned along with each members!!!. Not completely sure about assigning stuff.

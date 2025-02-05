@@ -18,7 +18,6 @@ y = lambda angle : [[cos(angle), 0, sin(angle)], [0, 1, 0], [-sin(angle), 0, cos
 z = lambda angle: [[cos(angle), -sin(angle), 0], [sin(angle), cos(angle), 0], [0, 0, 1]]
 
 def mult(a,b):
-    print(np.shape(np.matrix(a)),np.shape(np.matrix(b)))
     return np.round((np.matrix(a)@np.matrix(b).T),5).tolist()
 
 

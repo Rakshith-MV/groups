@@ -1,4 +1,8 @@
-from ast import main
+"""
+Some doc strings
+"""
+from functools import cache
+from math import factorial
 import sys
 import os
 from itertools import permutations
@@ -11,13 +15,13 @@ from helpers.Decorators import custom_cache, class_cache, _maptostr,_strtomap, e
 from math import lcm
 from helpers.graphs import sphere
 
-
+@class_cache
 class members:
     def __init__(self,
                  group_order:int,
                  element_s:str=None,
                  element_d:dict=None,
-                 inverse:object=None
+                 inverse:object=None    
                 ) -> None:
         self._all = [str(i) for i in range(group_order)]
         self.color = "white"
@@ -52,18 +56,19 @@ class members:
 
 
 
-class permutation(members):
+class Sn:
     def __init__(self,
             group_order,
             Alt:bool=0
             )->None:
         self._all = [str(i) for i in range(group_order)]
         self._id = dict(zip(self._all,self._all))
-        self.group_order = group_order
+        self.group_order =group_order if Alt == 0 else int(Alt/2)
+        self.number_of_elements = factorial(group_order) if Alt == 0 else int(factorial(group_order)/2)
         self.elements = []
-
-
+        print(self.group_order,self.number_of_elements)
         self.create(Alt)
+        self.maps = dict(zip(self.elements,range(self.number_of_elements)))
         self.cygroup()
         self.edges_and_vertices()
 
@@ -79,7 +84,8 @@ class permutation(members):
         else:
             for i in els:
                 self.elements.append(members(self.group_order, element_d=dict(zip(self._all,[str(j) for j in i]))))
-            
+
+
     def cayleys(self
                 ):
         return [[i*j for i in self.elements] for j in self.elements]
@@ -97,25 +103,32 @@ class permutation(members):
         Order based on the main cycle selected!!!
         How do you remove duplicate cosets??,
         """
+        #select the element for the main cycle
         main_element = self.elements[0]
         for i in self.elements:
             if main_element.order < i.order:
                 main_element = i
-        ordered_elements = [*main_element.cycles]
+
+        ordered_elements = main_element.cycles
+        selected_elements = [self.maps[i] for i in ordered_elements]
         for i in self.elements:
-            if i not in ordered_elements:
-                for element in [k*i for k in main_element.cycles]:
-                    ordered_elements.append(element)
-        self.vertices = sphere(main_element.order, self.group_order/main_element.order)
-        if gen == None:
-            gen = main_element
-        for i,j in zip(ordered_elements,range(self.group_order)):
-            ...
-        #This is where maps are important, each vertex much be assigned a proper integer!!!
-
-
+            if self.maps[i] not in selected_elements:
+                temp = [k*i for k in main_element.cycles]
+                for t in temp:
+                    ordered_elements.append(t)
+                    selected_elements.append(self.maps[t])
+        self.vertices = sphere(main_element.order,int(self.number_of_elements/main_element.order))        
+        self.edges = {}
+        
+        for i in ordered_elements:
+            self.edges[self.maps[i]] = self.maps[i*main_element]
+    
+    def __getitem__(self,
+                    i):
+        return self.elements[i]
         
 
 
 if __name__ == "__main__":
-    k = permutation(4)
+
+    k = Sn(3,1)

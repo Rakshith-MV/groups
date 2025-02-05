@@ -30,30 +30,23 @@ def custom_cache(f):
         return obj
     return wrappers
 
-
+#Written only for permutation class
 def class_cache(c):
     cache = {}
-    def wrapper(group_order: int,
-            element :any,
-            init_inverse :bool = False
-            ):
-        if type(element) == str:
-            string = element
-            hash = str(group_order)+element
-            maps = _strtomap(group_order
-                             ,element)
-        elif type(element) == dict:
-            maps = element
-            string = _maptostr(group_order, 
-                               element)
-            hash =  str(group_order) + string
-        
+    def wrapper(
+            group_order:int,
+            element_s:str=None,
+            element_d:dict=None,
+            inverse:object=None
+            )->c:
+        if element_s == None:
+            hash = str(group_order)+_maptostr(group_order,element_d)
         else:
-            raise IOError ("Either a string or a dictionary \n notin fancy")
+            hash = str(group_order)+element_s
 
         if hash in cache:
             return cache[hash]
-        obj = c(group_order, string, maps)
+        obj = c(group_order, element_s, element_d, inverse)
         cache[hash] = obj
 
         return obj    
@@ -79,8 +72,8 @@ def _strtomap(n:int,
     return D
 
 def _maptostr(n,
-                D:dict
-                )->str:
+            D:dict
+            )->str:
     """
     Takes in a dictionary of mapping, produces a list of disjoint strings.
 
@@ -102,6 +95,7 @@ def _maptostr(n,
                     break
                 new_string = values[0]
         except:
+            print("Enter exception")
             assert ValueError ("Doesn't form a proper cycles. ")
             return None
     return output_str.rstrip(',')

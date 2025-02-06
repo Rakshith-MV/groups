@@ -23,9 +23,10 @@ def mult(a,b):
 
 def sphere(Npoints:int,
            cosets:int):
-    points = [circle(Npoints)]
-    for i in range(cosets):                   #confused whether to use 0 - n-1 or 1 - n
-        points.append(mult(points[0],x(2*pi*i/cosets)))        
+    points = [i for i in circle(Npoints)]
+    for i in range(1,cosets):                   #confused whether to use 0 - n-1 or 1 - n
+        for j in mult(points,x(2*pi*i/cosets)):
+            points.append(j)        
     return points
 
         

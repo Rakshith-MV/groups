@@ -1,9 +1,10 @@
-function stupid_animate(container, vertex, edge, names, gen) {
+function stupid_animate(container, vertex, edge, names, gen=[]) {
     let scene, camera, renderer, orbit, dragControls;
     const nodes = [];
     const lines = [];
     const nodeLabels = [];
-
+    console.log(vertex);
+    console.log(edge);
     // Sample input data
     // if (vertex === null && edge === null && names === null) {
     //     // Your code here
@@ -60,13 +61,19 @@ function stupid_animate(container, vertex, edge, names, gen) {
         const toggleButton = document.createElement('button');
         toggleButton.textContent = 'label';
         toggleButton.style.position = 'absolute';
+        toggleButton.style.display = 'block';
         toggleButton.style.right = '14px';
-        toggleButton.style.size = 'bold';
-        toggleButton.style.backgroundColor = '#1DA1F2';
         toggleButton.style.top = '10px';
+        toggleButton.style.zIndex = '1000';
+        toggleButton.style.backgroundColor = '#1DA1F2';
         toggleButton.style.color = 'white';
         toggleButton.style.border = 'none';
-        toggleButton.style.zIndex = '1000';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.style.width = '100px';
+        toggleButton.style.height = '40px';
+        toggleButton.style.textAlign = 'center';
+        toggleButton.style.lineHeight = '40px';
+        toggleButton.style.cursor = 'pointer';
         toggleButton.addEventListener('mouseover', () => {
             toggleButton.style.transform = 'scale(1.1)';
         });
@@ -88,7 +95,7 @@ function stupid_animate(container, vertex, edge, names, gen) {
         if (gen && gen.length > 0) {
             const genDiv = document.createElement('div');
             genDiv.style.position = 'absolute';
-            genDiv.style.left = '10px';
+            genDiv.style.left = '120px';
             genDiv.style.top = '10px';
             genDiv.style.color = 'black';
             genDiv.style.backgroundColor = 'rgba(255, 255, 255, 0)';

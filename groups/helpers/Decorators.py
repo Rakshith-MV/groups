@@ -82,6 +82,8 @@ def _maptostr(n,
     new_string = "0"
     values = [str(i) for i in range(n)]
     output_str = ""
+    if D == {}:
+        return ' '
     while(True):
         try:
             if D[new_string[-1]] !=new_string[0]:        #To check for cycle completion
@@ -95,18 +97,18 @@ def _maptostr(n,
                     break
                 new_string = values[0]
         except:
-            print("Enter exception")
             assert ValueError ("Doesn't form a proper cycles. ")
-            return None
+            return ' '   #might have to return None in case of manual input
     return output_str.rstrip(',')
 
 def even(
         s:object
         )->bool:
     sum = 0
-    if s.string == '':
+    s1 = s.string.lstrip('(').rstrip(')')
+    if s1 == '':
         return 1
-    for i in s.string.split(','):
+    for i in s1:
         sum += (len(i)%2)
     if sum%2 == 0:
         return 0

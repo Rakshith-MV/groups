@@ -27,7 +27,9 @@ def create(choice,*,character=None,size=None,gen=None):
                 'cayleys': group.cayleys(),
                 # 'conjugacy': group.compute_conjugacy_classes(),
                 'vertices': group.vertices,
-                'edges':group.edges
+                'edges':group.edges,
+                'choices':group.names,
+                'gen':group.generators   
             }
         case 'D':
             group = gp.Dn(size, gen=gen)

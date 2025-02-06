@@ -30,12 +30,9 @@ class members:
         self.maps = element_d if element_d != None else _strtomap(group_order,element_s)
         self.string = element_s if element_s != None else _maptostr(group_order,element_d)  #there must be ',' in between small cycles
         self.inverse = members(group_order,element_d=dict(zip(self.maps.values(), self.maps.keys())),inverse=self) if inverse == None else inverse
-        try:
-            self.order = lcm(*[len(i) for i in self.string.split(',')])
-        except:
+        self.order = lcm(*[len(i) for i in self.string.split(',')])   #Do i need and exceptions????
+        if self.order == 0:
             self.order = 1
-
-
 
     def __mul__(self, 
                 sec:object
@@ -63,14 +60,17 @@ class Sn:
             )->None:
         self._all = [str(i) for i in range(group_order)]
         self._id = dict(zip(self._all,self._all))
-        self.group_order =group_order if Alt == 0 else int(Alt/2)
+        self.group_order =group_order
         self.number_of_elements = factorial(group_order) if Alt == 0 else int(factorial(group_order)/2)
         self.elements = []
-        print(self.group_order,self.number_of_elements)
         self.create(Alt)
-        self.maps = dict(zip(self.elements,range(self.number_of_elements)))
+        self.maps = dict(zip([el.string for el in self.elements],range(self.number_of_elements)))
+        self.edges = dict(zip([self.maps[el.string] for el in self.elements],[[] for i in range(self.number_of_elements)]))
+        
+        
         self.cygroup()
         self.edges_and_vertices()
+
 
     def create(self,
                Alt
@@ -108,26 +108,24 @@ class Sn:
         for i in self.elements:
             if main_element.order < i.order:
                 main_element = i
-
         ordered_elements = main_element.cycles
-        selected_elements = [self.maps[i] for i in ordered_elements]
+        selected_elements = [self.maps[i.string] for i in ordered_elements]
         for i in self.elements:
-            if self.maps[i] not in selected_elements:
+            if self.maps[i.string] not in selected_elements:
                 temp = [k*i for k in main_element.cycles]
                 for t in temp:
                     ordered_elements.append(t)
-                    selected_elements.append(self.maps[t])
+                    selected_elements.append(self.maps[t.string])
         self.vertices = sphere(main_element.order,int(self.number_of_elements/main_element.order))        
-        self.edges = {}
-        
+        self.names = [i.string for i in ordered_elements]
+        self.generators = [main_element.string]
         for i in ordered_elements:
-            self.edges[self.maps[i]] = self.maps[i*main_element]
-    
+            self.edges[self.maps[i.string]].append(self.maps[(i*main_element).string])
+
     def __getitem__(self,
                     i):
         return self.elements[i]
         
-
 
 if __name__ == "__main__":
 

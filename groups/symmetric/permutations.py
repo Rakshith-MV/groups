@@ -196,6 +196,9 @@ class Pgroup():
             k+=1
         return s
 
+    def __repr__(self):
+        return self.__str__()
+
 if __name__ == "__main__":
     k = Pgroup(2)
     for i in k.elements:

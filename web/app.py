@@ -59,6 +59,15 @@ groups = [
         "image": "symetric.png",
         "page": "product"
     }
+    ,
+    {
+        "id": 5,
+        "name": "Mappings",
+        "description": "Isomorphisms and Homomorphisms",
+        "color": "#1DA1F2",
+        "image": "maps.png",
+        "page": "mapping"
+    }
 ]
 
 @app.route('/')
@@ -211,6 +220,15 @@ def symmetric():
         methods=['GET', 'POST']
 )
 def product():
+    return render_template('product.html',
+                           title='product-groups')
+
+
+@app.route(
+        '/mapping/',
+        methods=['GET', 'POST']
+)
+def maps():
     return render_template('product.html',
                            title='product-groups')
 

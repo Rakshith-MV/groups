@@ -16,8 +16,12 @@
     {{ form.operation }} {{ form.number }}
     {{ form.graph }}
     {% if form.graph.data == 'graph' %}
-        
+        {% for i in details.elements %}
+            {% set _ = form.generator.choices.append(i.string) %}
+        {% endfor %}
+        <p style="display: inline; color: black; font-size: large;">Choose generator : {{ form.generator }} </p> 
     {% endif %}
+
     {{ form.submit }}
 
 </form>

@@ -66,7 +66,7 @@ groups = [
         "description": "Isomorphisms and Homomorphisms",
         "color": "#1DA1F2",
         "image": "maps.png",
-        "page": "mapping"
+        "page": "product"
     }
 ]
 
@@ -192,10 +192,12 @@ def symmetric():
     if request.method == 'POST':
         if (form.number != None) :
             try:
-                sym_data = [str(request.form['operation']),int(request.form['number']),str(request.form['graph'])]  # Convert to integer
+                sym_data = [str(request.form['operation']),int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
+                print(sym_data[3])
                 sym_details = create('P',
                                  character= sym_data[0],
-                                 size = sym_data[1])
+                                 size = sym_data[1],
+                                 gen=sym_data[3])
                 colors = [choose() for i in range(len(sym_details['elements']))]
                 k = iter(colors)
                 for i in sym_details['elements']:
@@ -220,15 +222,6 @@ def symmetric():
         methods=['GET', 'POST']
 )
 def product():
-    return render_template('product.html',
-                           title='product-groups')
-
-
-@app.route(
-        '/mapping/',
-        methods=['GET', 'POST']
-)
-def maps():
     return render_template('product.html',
                            title='product-groups')
 

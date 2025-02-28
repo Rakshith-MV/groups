@@ -19,13 +19,16 @@ def create(choice,*,character=None,size=None,gen=None):
             }
         case 'P':
             if character == 'S_n':
-                group = gp.Sn(size, 0)
+                group = gp.Sn(size,
+                              0,
+                              gen)
             else:
-                group = gp.Sn(size, 1)            
+                group = gp.Sn(size,
+                               1,
+                               gen)         
             return {
                 'elements': group.elements,
                 'cayleys': group.cayleys(),
-                # 'conjugacy': group.compute_conjugacy_classes(),
                 'vertices': group.vertices,
                 'edges':group.edges,
                 'choices':group.names,

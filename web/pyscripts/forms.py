@@ -28,7 +28,13 @@ class sym(FlaskForm):
     operation = RadioField('S/A',choices=['S_n','A_n'],default='S_n')
     number = IntegerField(validators=[DataRequired(), NumberRange(1,5,'Number b/w 1-5 please!!')],default=None)
     submit = SubmitField('compute')
-    generator = SelectField("Choose Generator", choices=[], default=None)
+    generator = SelectField("Choose Generator", 
+                            choices=[], 
+                            default=None, 
+                            id="GeneratorField",
+                            option_widget=CheckboxInput(),
+                            widget=ListWidget(prefix_label=False)
+    )
 
     def update(self,data):
         self.generator.data = data

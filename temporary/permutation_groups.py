@@ -1,5 +1,6 @@
 """
-Some doc strings
+Permutation groups as the name says.
+Gives all the permutations of a string(n : int).
 """
 from functools import cache
 from math import factorial
@@ -67,7 +68,7 @@ class Sn:
         self.create(Alt)
         self.maps = dict(zip([el.string for el in self.elements],range(self.number_of_elements)))
         self.edges = dict(zip([self.maps[el.string] for el in self.elements],[[] for i in range(self.number_of_elements)]))
-        print(generators)
+        # print(generators)
         self.cygroup()
         self.edges_and_vertices(generators)
 
@@ -118,7 +119,7 @@ class Sn:
                     selected_elements.append(self.maps[t.string])
         self.vertices = sphere(main_element.order,int(self.number_of_elements/main_element.order))
         self.names = [i.string for i in ordered_elements]
-        self.generators = [main_element.string] if gen == [] else gen
+        self.generators = [main_element.string] if gen == [] or gen ==None else gen
         for j in self.generators:
             el = self.elements[self.maps[j]]
             for i in self.elements:
@@ -130,5 +131,4 @@ class Sn:
         
 
 if __name__ == "__main__":
-
     k = Sn(3,1)

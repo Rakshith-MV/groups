@@ -1,9 +1,5 @@
-# Import key functions/classes from submodules
-from groups.dihedral.Dihedral import Dn
-from groups.helpers import *
-from groups.modulo.modulos import modulo as Mn
-from groups.product_groups.product import Pn
-from groups.symmetric.permutation_groups import Sn
-
+from .modulo import ModuloA as MnA
+from .modulo import ModuloM as MnM
+from .dihedralg import Dihedral as Dn
 # You can specify which symbols to export
-__all__ = ['Dn', 'Mn', 'Sn','Pn']
+__all__ = ['Dn', 'MnA', 'Sn','Pn', 'MnM']

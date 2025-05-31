@@ -1,1 +1,0 @@
-all = ["permutation_groups"]

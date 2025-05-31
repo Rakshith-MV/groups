@@ -4,7 +4,7 @@ The real question answered by cayley was can an abstract group created properly 
 an usefull symmetry of some object. 
 
 Can that object be pointed out??? some sources says *Hell yeah*, haven't found anything usefull as of now, 
-better question is what is the smallest symmetric which is homomorphic to the given group. 
+better question is what is the smallest symmetric group which contains a homomorphic copy of the given group. 
 
 Ofcourse if the group is cyclic then.
 1===> take an n permutation in a group of order >= n.
@@ -17,8 +17,8 @@ Ofcourse if the group is cyclic then.
 from functools import cache
 import math as mt
 
-from ..helpers.Decorators import powerset, prime_decomposition
-from ..helpers.graphs import circle
+from .Decorators import powerset, prime_decomposition
+from .graphs import circle
 import random
 
 @cache
@@ -29,7 +29,9 @@ class members:
             element: and integer as a member of group
             n      : integer, number of elements in the group
             id     : identity element
-            operation: character 
+            operation: character
+    Required attributes:
+            order, inverse. 
     ======================================================================
     """
     def __init__(self,
@@ -47,21 +49,34 @@ class members:
 
     def __matmul__(self,
                      i:int):
+        """
+        This is defined for operation between a group element and an integer(modulo).
+        """
         if self.op == '*':  
-            return members((self.element*i)%self.group_order,self.group_order,self.id, self.op) 
-        return members((self.element+i)%self.group_order,self.group_order,self.id, self.op)
+            return members((self.element*i)%self.group_order,
+                           self.group_order,self.id, self.op) 
+        return members((self.element+i)%self.group_order,
+                       self.group_order,self.id, self.op)
+        
     def __mul__(self,
                 i:any
                ):
+        """
+        Defined for the operation between group elements.
+        """
         try:
             if self.op == '*':
-                return members((self.element*i)%self.group_order,self.group_order,self.id, self.op)
-            return members((self.element+i)%self.group_order,self.group_order,self.id, self.op)
+                return members((self.element*i)%self.group_order,
+                               self.group_order,self.id, self.op)
+            return members((self.element+i)%self.group_order,
+                           self.group_order,self.id, self.op)
         except TypeError:
             if self.op == '*':
-                return members((self.element*i.element)%self.group_order,self.group_order,self.id, self.op)
-            return members((self.element+i.element)%self.group_order,self.group_order,self.id, self.op)
-        
+                return members((self.element*i.element)%self.group_order,
+                               self.group_order,self.id, self.op)
+            return members((self.element+i.element)%self.group_order,
+                           self.group_order,self.id, self.op)
+
     def __pow__(self,
                 n:int
                 )->int:
@@ -77,7 +92,7 @@ class members:
     def __str__(self) -> str:
         return str(self.element)
 
-# @cache   I don't know how effective this was or is.
+# @cache
 class modulo:
     """
     A modulo group of order n, with operation + or *.
@@ -90,13 +105,16 @@ class modulo:
 
     ------------------------------------------------------------
     print(object) to find elements with indexes.
+    -----------------------------------------------------------
+    Required attributes(isomorphism):
+            elements, group_order.  
     ------------------------------------------------------------
     """
     def __init__(self,
                  n:int,
                  operation:chr="+",
                  generator:int=[]
-                 ) -> None:
+             121 ) -> None:
         self.op = operation
         if operation == "*":
             self.id = 1
@@ -122,8 +140,11 @@ class modulo:
 
     def inverses(self
                 )->None:
+        """
+        Find inverses of the elements
+        """
         for i in self.elements:
-            i.order  = len(self.elements)
+            # i.order  = len(self.elements)
             k = 1
             temp = i
             i.inverse = temp
@@ -135,9 +156,11 @@ class modulo:
 
     def cayleys(self
                 )->None:
-        table = [[ i for i in self._cycles(e.element)] for e in  self.elements]
-        #print(tabulate([[str(self.elements[i])+"  ", *table[i]] for i in range(len(self.elements))],["# ",*self.elements],"grid"))
-        return table
+        """
+        Table
+        """
+        return [[ i for i in self._cycles(e.element)] 
+                for e in  self.elements]
 
     def find_generators(self
                    ):
@@ -169,23 +192,10 @@ class modulo:
     def _cycles(self,
                 i:int
                 )->set:
-        temp = [e*i for e in self.elements]
-        return temp
-
-    def _sub_cycle(self):
-        temp = [self.gen]
-        for i in range(self.gen.order-1):
-            temp.append(temp[i]*self.gen)
-        return temp
-#Since the group is cyclic we don't need any of these, although subgroup generated by a set of elements could be computed.
-# Also it's just the gcd of that element with the order. Z_2*Z_3 might be quite interesting in Z_10.
-    # def subgroup_generated(self,
-    #                        i):    
-    #     j = i
-    #     subgroup = set(i)
-    #     for index in range(i.order):
-    #         j = j*i
-    #         subgroup.add(j)
+        """
+        all the resulting elements by operating from a particular element.
+        """
+        return [e*i for e in self.elements]
 
     def edges_and_vertices(self,
                            generator=[]

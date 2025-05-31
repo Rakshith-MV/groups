@@ -76,11 +76,12 @@ groups = [
 def home():
     return render_template('index.html', groups=groups)
 
-#int_data = kind of group, range of data, graph or table,
-int_data = ['+',4,'table','0']
-int_details = {}
-int_previous = []
-int_selected_generators = []
+#dmod['data']= kind of group, range of data, graph or table,
+dmod = {'data':['+',4,'table','0'],
+        'details':{},
+        'previous':{},
+        'selected_generators': []
+}
 
 #sym_data = ['type',number, graph]
 sym_data = ['S_n',3,'table',None]
@@ -97,44 +98,41 @@ dn_previous = []
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
     form = integer_mod()  # Define the form here
-    global int_data
-    global int_details
-    global int_selected_generators
-    global int_previous
+    global dmod
     if request.method == 'POST':
         if (form.mod_num != None):
             try:
-                int_data = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
+                dmod['data'] = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
                 try:
-                    if int_previous[1] == int_data[1] or int_previous[0] != int_data[0]:
-                        int_selected_generators = ['1'] if int_data[0] == '+' else []
-                        if int_data[-1] != []:
-                            int_selected_generators = int_data[-1]
+                    if dmod['previous'][1] == dmod['data'][1] or dmod['previous'][0] != dmod['data'][0]:
+                        dmod['selected_generators'] = ['1'] if dmod['data'][0] == '+' else []
+                        if dmod['data'][-1] != []:
+                            dmod['selected_generators'] = dmod['data'][-1]
                     else:
-                        int_selected_generators = ['1']
+                        dmod['selected_generators'] = ['1']
                     
                 except:
-                    int_selected_generators = ['1']
-                int_details = create('Z',
-                                    character=str(int_data[0]),
-                                    size=int(int_data[1]),
-                                    gen=int_selected_generators)
-                if int_data[2] == 'table':
-                    colors = [choose() for i in range(int_data[1])]
-                    for i, j in zip(int_details['elements'],colors):
+                    dmod['selected_generators'] = ['1']
+                dmod['details'] = create('Z',
+                                    character=str(dmod['data'][0]),
+                                    size=int(dmod['data'][1]),
+                                    gen=dmod['selected_generators'])
+                if dmod['data'][2] == 'table':
+                    colors = [choose() for i in range(dmod['data'][1])]
+                    for i, j in zip(dmod['details']['elements'],colors):
                         i.color = j 
-                int_previous = int_data.copy()
+                dmod['previous'] = dmod['data'].copy()
                 return redirect(url_for('integer'),code=302)
             except ValueError:      
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
-    form.mod_num.data = int(int_data[1])    
-    form.operation.data = int_data[0]
-    form.graph.data = int_data[2]
+    form.mod_num.data = int(dmod['data'][1])    
+    form.operation.data = dmod['data'][0]
+    form.graph.data = dmod['data'][2]
     return render_template('integerm.html',
                             title='Integer_mod_groups',
                             form=form,
-                            data=int_data,
-                            details=int_details,
+                            data=dmod['data'],
+                            details=dmod['details'],
                             graph=0)
 
 @app.route(

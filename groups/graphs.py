@@ -4,11 +4,12 @@ import numpy as np
 
 @cache
 def circle(numbers,
-           radius=1):
+           radius=1,
+           z:int=0):
     points = []
     r = sqrt(radius)
     for i in range(1,numbers+1):
-        points.append([round(r*sin(2*i*pi/numbers),5),round(r*cos(2*i*pi/numbers),5),0])
+        points.append([round(r*sin(2*i*pi/numbers),5),round(r*cos(2*i*pi/numbers),5),z])
     return points
 
 x = lambda angle:  [[1, 0, 0], [0, cos(angle), -sin(angle)], [0, sin(angle), cos(angle)]]
@@ -29,9 +30,17 @@ def sphere(Npoints:int,
             points.append(j)        
     return points
 
+def polygon(n,
+        points:list
+        ):
+    return circle(n,
+           radius=1,
+           z=points[-1])
+
+
+
         
 if __name__=='__main__':
-
     k = sphere(5,5)
     for i in k:
         for j in i:

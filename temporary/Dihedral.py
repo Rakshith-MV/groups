@@ -1,7 +1,7 @@
 import math
 from functools import cache
 from unittest import skip
-from ..helpers.graphs import circle
+from ..groups.graphs import circle
 """
 2 operations, one cyclic the other flips, 
 Rotations and Reflections
@@ -94,6 +94,8 @@ class Dn:
         self.maps = dict(zip([(i,j) for i in range(2) for j in range(self.n)], range(2*self.n)))
         self.edges_and_vertices(gen)
         self.generators = gen
+        self.group_order = len(self.elements)
+        
     def compute_conjugacy_classes(self
                           ):
         for i in self.elements:

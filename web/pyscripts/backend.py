@@ -4,13 +4,15 @@ sys.path.append(os.getcwd().rstrip(r'\web\pyscripts'))
 import groups as gp
 
 
-
 def create(choice,*,character=None,size=None,gen=None):
     match choice:
         case 'Z':
-            group = gp.Mn(size,character,gen)
+            if character == '+':
+                group = gp.MnA(size)
+            else:
+                group = gp.MnM(size)
             return {
-                'elements': group.elements,
+                'elements': group._elements,
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
                 'edges': group.edges,

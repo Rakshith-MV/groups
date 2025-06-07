@@ -1,4 +1,3 @@
-from groups.helpers.Groups import main
+import groups as gp
 
-
-main()
+gp.dihedralg.test()

@@ -1,0 +1,187 @@
+[33mcommit f92ab365fcc1bc7d3c6a9e9e68ffda887109fa42[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mprevious[m[33m, [m[1;31mDraft/previous[m[33m)[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Sat May 31 15:26:11 2025 +0530
+
+    group base
+
+[33mcommit 186f922aa7f8eb9290e6c77248eca7e54168c10f[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Sat Mar 1 01:01:52 2025 +0530
+
+    changes in symmetric group
+
+[33mcommit 84b85ac0255399ec599a895695fdb67b33a9a36c[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Feb 26 06:24:52 2025 +0530
+
+    clearing
+
+[33mcommit 90c0656e7e6ef8446497c2ff4729a1aa857ffa81[m
+Merge: 4cac2da ea194cf
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Feb 6 06:20:01 2025 +0530
+
+    Merge branch 'previous' of https://github.com/Rakshith-MV/groups into previous
+
+[33mcommit 4cac2da3ac09d2df6ee58d152c2a7701765829f0[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Feb 6 06:18:07 2025 +0530
+
+    Graphs of symmetric
+
+[33mcommit 02bb642bc2e2064c178829b3f2704d4940d7d216[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Feb 5 06:53:10 2025 +0530
+
+    permutation
+
+[33mcommit ea194cf645fa8e785a5a08081add1b328067bf95[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Mon Feb 3 19:07:50 2025 +0530
+
+    Update messages.txt
+
+[33mcommit f05ba790257fcf2afc3719301c32cfe157b83d8e[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Mon Feb 3 18:53:46 2025 +0530
+
+    Implemented permutation in a new file, and clearly
+
+[33mcommit 6ececd079aaec69b665eadce53984a27f7989cd7[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Mon Feb 3 07:02:25 2025 +0530
+
+    Rewriting permutation_group
+
+[33mcommit eefb86c558c4953e6c0e46c33719559e223d2b7e[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Sat Feb 1 15:07:41 2025 +0530
+
+    some
+
+[33mcommit 503e361b3e6e1e5b0bf1600ceb11f656cd11b929[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Jan 29 01:26:12 2025 +0530
+
+    small changes
+
+[33mcommit 8e3256a44c2bf55b546156378be648179da8ea5f[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Jan 16 19:16:27 2025 +0530
+
+    safe updates
+
+[33mcommit 4efccdd5160704e8deae748d9491428397e2834c[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Jan 16 06:31:04 2025 +0530
+
+    added_social_media
+
+[33mcommit 7b5dc05f57a4c34cb6df79d898f7b5ef81cfcfd0[m
+Merge: 04199af 0152d8c
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Jan 16 05:23:42 2025 +0530
+
+    Merge branch 'previous' of https://github.com/Rakshith-MV/groups into previous
+
+[33mcommit 04199afec859f9869f3a4887c5549e246c417e75[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Jan 16 05:23:28 2025 +0530
+
+    for_python_anywhere
+
+[33mcommit 0152d8c998b35d49c112ffa89b3cf35dc7754f0f[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Jan 15 06:20:37 2025 +0530
+
+    Update forms.py
+
+[33mcommit 054c9536e9d97e999bfc2a84e3a735a2924dd95e[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Jan 15 06:17:05 2025 +0530
+
+    tiny
+
+[33mcommit 34b0fc8a0e0b3194eb392b9c967d81858330abb5[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Jan 15 06:02:24 2025 +0530
+
+    draft_for_pythonanywhere
+
+[33mcommit 0e9ca9a46a5ec603e9c1ee2892de721b3cb1af6e[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Tue Jan 14 10:56:45 2025 +0530
+
+    memory update of graph generators in dihedral groups, pretty stable now
+
+[33mcommit ef886a6506c567dca1faf90fe809d36ebcc36ea9[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Jan 8 07:00:22 2025 +0530
+
+    justsmallupdates
+
+[33mcommit 7dbea43b084a5657bc843f37ffeda5addb914821[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Tue Jan 7 06:18:24 2025 +0530
+
+    NOthing
+
+[33mcommit 693c8787c074801e55e229adb85f84d41987418f[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Mon Jan 6 07:25:57 2025 +0530
+
+    rotation of points for symmetric matrices
+
+[33mcommit e50f229187e507aad66bfc49cd610357f65a4cb3[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Fri Jan 3 17:04:06 2025 +0530
+
+    implemented graphs for dihedral and resized the graph container
+
+[33mcommit 43472de7378af03d5209ee3b08e8e3f050a27de8[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Sun Dec 29 05:58:20 2024 +0530
+
+    symmetric
+
+[33mcommit 2b84b34862eddf9d0a6c30aba12833c4b0b814e3[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Thu Dec 26 07:47:35 2024 +0530
+
+    Succesfully implemented generators
+
+[33mcommit ef60fdc8c29154d4064dce01039987db154157be[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Dec 25 22:29:32 2024 +0530
+
+    implemented generators properly
+
+[33mcommit 9c40f8d7e388d64566ef6104713cf4944d394eaa[m
+Author: Rakshith <werakshith@gmail.com>
+Date:   Wed Dec 25 15:50:41 2024 +0530
+
+    generators_implementation
+
+[33mcommit 1fc317c1ae6656be6647b600fbd8cefb284bb97f[m[33m ([m[1;32mmaster[m[33m)[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Sat Dec 21 06:24:05 2024 +0530
+
+    Trying to use generators
+
+[33mcommit 5d5eaf34dee72a1ba89f98be5b460f6f76010371[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Tue Dec 17 17:38:56 2024 +0530
+
+    The visualization part of integers is almost done.
+
+[33mcommit a719e9d7f9507a660bfdec2311befddfb21c3ad2[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Tue Dec 10 07:40:51 2024 +0530
+
+    Proper formatting
+
+[33mcommit c2f570ac042637a102846972386475b0a2248193[m
+Author: RakshithV <werakshith@gmail.com>
+Date:   Sat Dec 7 07:15:21 2024 +0530
+
+    Removed compiled stuff.

@@ -49,8 +49,9 @@ class elementsA(element):
 
 class ModuloM(Group):
     def __init__(self,
-                 n:int
-                 ):
+                n:int,
+                generators:list=[]
+                ):
         self._elements = [elementsM(i,n) for i in range(1,n) if math.gcd(i,n) == 1]
         self._order = len(self._elements)
         self._identity = 1
@@ -58,10 +59,8 @@ class ModuloM(Group):
         self._inverses = {}
         for i in self._elements:
             self._inverses[i] = self.inverse(i)
-        # self.update_graph(generators=generators)
-        self.edges = {}
-        self.vertices = []
-
+        self.update_graph(generators=generators)
+        
 
     def inverse(self,
                 element):
@@ -93,5 +92,7 @@ class elementsM(element):
             return elementsM((self._number * other)%self._gorder, self._gorder)
         return elementsM((self._number * other._number)%self._gorder, self._gorder)
     
-if __name__ == "__main__":
+def test():
     k = ModuloM(10)
+    for i in k:
+        print(i)    

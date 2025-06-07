@@ -33,16 +33,16 @@ def create(choice,*,character=None,size=None,gen=None):
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
                 'edges':group.edges,
-                'choices':group.names,
-                'gen':group.generators   
+                'choices':group.__str__(),
+                'gen':group._generators   
             }
         case 'D':
-            group = gp.Dn(size, gen=gen)
+            group = gp.Dn(2*size,
+                          generators=gen)
             return {
-                'elements': group.elements,
+                'elements': group._elements,
                 'cayleys': group.cayleys(),
-                # 'conjugacy': group.compute_conjugacy_classes()
-                'gen':group.generators,
+                'gen':group._generators,
                 'vertices': group.vertices,
                 'edges':group.edges,
                 'choices':group.__str__()

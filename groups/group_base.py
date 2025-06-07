@@ -43,12 +43,32 @@ class Group:
      
     def generators(self
                     ):
-        self.generators = [i for i in self._elements if i.order == self.order]
-
+        self._generators = [i for i in self._elements if i._order == self._order]
+    
+    def cycles(self,
+               j):
+        if isinstance(j, element):
+            return [j*i for i in self._elements]
+        else:
+            raise TypeError("Input must be an instance of the element class.")
 
     def update_graph(self,
                     generators = []):
         raise NotImplementedError
 
-    def __str__(self) -> str:
+    def __len__(self) -> int:
+        return len(self._order)
+    
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._elements[key]
+        elif isinstance(key, str):
+            return next((i for i in self._elements if i.__str__() == key), None)
+        else:
+            raise TypeError("Key must be an integer or a string representing the element.")
+
+    def __iter__(self):
+        return iter(self._elements)
+
+    def __str__(self) -> list:
         return [i.__str__() for i in self._elements]

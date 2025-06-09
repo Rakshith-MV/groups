@@ -1,3 +1,3 @@
 import groups as gp
 
-gp.dihedralg.test()
+gp.modulo.test()

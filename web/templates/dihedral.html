@@ -40,7 +40,7 @@
                     <tr>
                         {% for element in row %}
                         <td>
-                            <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                            <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ details.inverses[element] }}', '{{ element._order }}')">
                                 {% if element.f == 1%}
                                     {% if element.r != 0 %}
                                         fr<sup> {{ element.r }}</sup>       

@@ -1,5 +1,6 @@
 from functools import cache
 import math
+from .Decorators import unitary
 from .group_base import Group, element
 from .graphs import circle
 
@@ -52,8 +53,10 @@ class ModuloM(Group):
                 n:int,
                 generators:list=[]
                 ):
-        self._elements = [elementsM(i,n) for i in range(1,n) if math.gcd(i,n) == 1]
-        self._order = len(self._elements)
+        temp = unitary(n)
+        print(temp)
+        self._elements = [elementsM(i,len(temp)) for i in temp]
+        self._order = len(temp)
         self._identity = 1
         self._maps = dict(zip(self._elements, range(self._order)))
         self._inverses = {}
@@ -64,9 +67,13 @@ class ModuloM(Group):
 
     def inverse(self,
                 element):
-        for i in self._elements:
-            if (i * element)._number == 1:
-                return i
+        i = element
+        order = 1
+        while(i._number != 1):
+            i*=element
+            order +=1
+        element._order = order
+        return i
 
     def update_graph(self,
                      generators):
@@ -84,8 +91,7 @@ class elementsM(element):
                 ):
         self._number = element
         self._gorder = order
-        self._order = order
-        
+
     def __mul__(self,
                 other):
         if not isinstance(other, element):
@@ -93,6 +99,7 @@ class elementsM(element):
         return elementsM((self._number * other._number)%self._gorder, self._gorder)
     
 def test():
-    k = ModuloM(10)
+    k = ModuloM(4)
     for i in k:
-        print(i)    
+        print(i, end=' ')
+        print(k._inverses[i])

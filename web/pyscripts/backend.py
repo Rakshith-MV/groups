@@ -12,6 +12,7 @@ def create(choice,*,character=None,size=None,gen=None):
             else:
                 group = gp.MnM(size)
             return {
+                'inverses': group._inverses,
                 'elements': group._elements,
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
@@ -40,9 +41,10 @@ def create(choice,*,character=None,size=None,gen=None):
             group = gp.Dn(2*size,
                           generators=gen)
             return {
+                'inverses': group._inverses,
                 'elements': group._elements,
                 'cayleys': group.cayleys(),
-                'gen':group._generators,
+                'gen': [i.__str__() for i in group._generators],
                 'vertices': group.vertices,
                 'edges':group.edges,
                 'choices':group.__str__()

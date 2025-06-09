@@ -23,6 +23,7 @@ class Dihedral(Group):
         """
         Update the graph representation of the Dihedral group.
         """
+        print("Updating Dihedral group graph with generators:", generators)
         self._generators.clear()
         self.vertices = [*circle(self._order//2,0.4),*circle(self._order//2,1)]
         for i in generators:
@@ -50,11 +51,18 @@ class members(element):
         self._gorder = order
         self._cycle = self._gorder//2
         self._number = (f, r)
-        self._order = math.gcd(r,self._gorder) if f == 0 else math.gcd(r, self._gorder, 2)
-        
+        if f == 0:
+            if r == 0:
+                self._order = 1
+            else:
+                self._order = math.gcd(r, self._cycle)
+        else:
+            self._order = math.gcd(r,self._cycle, 2)
+
     def inverse(self):
-        return members(self.f, -self.r % self._gorder, self._gorder)
-    
+        if self.f == 0:
+            return members(self.f, (self._cycle-self.r), self._gorder)
+        return members(self.f, self.r, self._gorder)
     def __mul__(self, other):
         if isinstance(other, element):
             if other.f == 1:
@@ -71,12 +79,7 @@ class members(element):
 
 
 def test():
-    d = Dihedral(6, ['fr0', 'r1'])
+    d = Dihedral(4, ['fr0', 'r1'])
     for i in d:
-        print(i)
-        for j in d:
-            print(i ," * ", j, " : ",i*j)
-        print()
-        for j in d:
-            print(j ," * ", i, " : ",j*i)
-        print('\n')
+        print(d._inverses[i], end=' ')
+        print(i._order)

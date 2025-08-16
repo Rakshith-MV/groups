@@ -7,7 +7,7 @@ from .graphs import circle
 class ModuloA(Group):
     def __init__(self,
                  n,
-                 generators:list=[]
+                 generators:list=[1]
                  ):
         super().__init__(n)
         self._order = n
@@ -17,10 +17,11 @@ class ModuloA(Group):
                                    [0]+[self._elements[n-i] for i in range(1,n)])
                                    )
         self._maps = dict(zip(self._elements,range(self._order)))
+        print("entering generators")
         self.update_graph(generators=generators)
 
     def update_graph(self,
-                    generators):
+                    generators:list):
         """
         1 is always a generator
         """
@@ -99,7 +100,8 @@ class elementsM(element):
         return elementsM((self._number * other._number)%self._gorder, self._gorder)
     
 def test():
-    k = ModuloM(4)
+    k = ModuloA(5)
     for i in k:
         print(i, end=' ')
         print(k._inverses[i])
+    print(k.edges)

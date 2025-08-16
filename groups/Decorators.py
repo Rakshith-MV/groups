@@ -105,7 +105,7 @@ def even(
         s:object
         )->bool:
     sum = 0
-    s1 = s.string.lstrip('(').rstrip(')')
+    s1 = s._string.lstrip('(').rstrip(')')
     if s1 == '':
         return 1
     for i in s1:

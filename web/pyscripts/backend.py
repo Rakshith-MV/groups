@@ -30,7 +30,8 @@ def create(choice,*,character=None,size=None,gen=None):
                                1,
                                gen)         
             return {
-                'elements': group.elements,
+                'inverses' : group._inverses,
+                'elements': group._elements,
                 'cayleys': group.cayleys(),
                 'vertices': group.vertices,
                 'edges':group.edges,

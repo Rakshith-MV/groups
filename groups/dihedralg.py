@@ -63,6 +63,7 @@ class members(element):
         if self.f == 0:
             return members(self.f, (self._cycle-self.r), self._gorder)
         return members(self.f, self.r, self._gorder)
+    
     def __mul__(self, other):
         if isinstance(other, element):
             if other.f == 1:

@@ -45,11 +45,11 @@
             <div id="tableView">
                 {% if data[1] != 0 %}
                     <table style="margin-left: auto; margin-right: auto;"> 
-                        {% for row in details.cayleys %}
+                    {% for row in details.cayleys %}
                         <tr>
                             {% for element in row %}
-                            <td>    
-                                <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ element.inverse.__str__() }}', '{{ element.order }}')">
+                            <td>               
+                                <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ details.inverses[element] }}', '{{ element._order }}')">
                                     {{ element.__str__() }}       
                                 </button>
                             </td>
@@ -77,7 +77,7 @@
                     generator
                 );
             });
-        </script> 
+        </script>
         {% endif %}
     </div>
 {% endblock %}

@@ -97,6 +97,7 @@ dn_previous = []
 
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
+    print('integer')
     form = integer_mod()  # Define the form here
     global dmod
     if request.method == 'POST':
@@ -122,6 +123,7 @@ def integer():
                     for i, j in zip(dmod['details']['elements'],colors):
                         i.color = j 
                 dmod['previous'] = dmod['data'].copy()
+                print(dmod['details'].get('edges', 'No edges found'))
                 return redirect(url_for('integer'),code=302)
             except ValueError:      
                 flash('Invalid input for mod_num. Please enter a valid number.', 'error')
@@ -191,7 +193,6 @@ def symmetric():
         if (form.number != None) :
             try:
                 sym_data = [str(request.form['operation']),int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
-                print(sym_data[3])
                 sym_details = create('P',
                                  character= sym_data[0],
                                  size = sym_data[1],
@@ -207,13 +208,12 @@ def symmetric():
     form.operation.data = sym_data[0]
     form.number.data = sym_data[1]
     form.graph.data = sym_data[2]
-    # form.generator.da ta = sym_data[3]
-    return render_template('sym.html', 
+    # form.generator.data = sym_data[3]
+    return render_template('sym.html',
                            title='symmetric-groups',
                              form=form, 
                                data=sym_data
                                ,details=sym_details)
-
 
 @app.route(
         '/product/',

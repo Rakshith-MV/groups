@@ -48,7 +48,7 @@ class Group:
     def cycles(self,
                j):
         if isinstance(j, element):
-            return [j*i for i in self._elements]
+            return [i*j for i in self._elements]
         else:
             raise TypeError("Input must be an instance of the element class.")
 

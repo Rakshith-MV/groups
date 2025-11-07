@@ -1,6 +1,5 @@
 from functools import cache
 from math import e, pi, sin, cos, sqrt
-from networkx import radius
 import numpy as np
 
 @cache

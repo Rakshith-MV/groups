@@ -1,8 +1,13 @@
 from functools import cache
 import math
+
+import groups
 from .Decorators import unitary
 from .group_base import Group, element
 from .graphs import circle
+
+imaps = {}
+maps = {}
 
 class ModuloA(Group):
     def __init__(self,
@@ -13,11 +18,11 @@ class ModuloA(Group):
         self._order = n
         self._elements = [elementsA(i,n) for i in range(n)]
         self._identity = 0
-        self._inverses = dict(zip(self._elements,
-                                   [0]+[self._elements[n-i] for i in range(1,n)])
-                                   )
-        self._maps = dict(zip(self._elements,range(self._order)))
-        print("entering generators")
+        self._inverses = dict(zip(self._elements,[self._elements[0]] + self._elements[:0:-1]))
+                                #    [0]+[self._elements[n-i] for i in range(1,n)])
+        global imaps, maps 
+        maps = dict(zip(self._elements,range(self._order)))
+        imaps = dict(zip(range(self._order),self._elements))
         self.update_graph(generators=generators)
 
     def update_graph(self,
@@ -28,7 +33,7 @@ class ModuloA(Group):
         self.generators = generators
         self.edges = {}
         for i in self._elements:
-            self.edges[self._maps[i]] = [self._maps[(i*j)._number] for j in self.generators]
+            self.edges[maps[i]] = [maps[i*imaps[int(j)]] for j in self.generators]
         self.vertices = circle(self._order)
 
 @cache
@@ -39,50 +44,53 @@ class elementsA(element):
                  ):
         self._number = element
         self._gorder = order
-        self._order = math.gcd(element, order)
-        if self._order == 1 and element != 0:
-            self._order = order
-
+        self._order = int(order/math.gcd(element, order)) 
+        
     def __mul__(self,
                 other):
         if not isinstance(other, element):
-            return elementsA((self._number + other)%self._gorder, self._gorder)
-        return elementsA((self._number + other._number)%self._gorder, self._gorder)
+            return imaps[(self._number + other)%self._gorder]
+        return imaps[(self._number + other._number)%self._gorder]
 
 class ModuloM(Group):
     def __init__(self,
                 n:int,
                 generators:list=[]
                 ):
+        super().__init__(n)
         temp = unitary(n)
-        print(temp)
-        self._elements = [elementsM(i,len(temp)) for i in temp]
+        self._elements = [elementsM(i,n) for i in temp]
         self._order = len(temp)
-        self._identity = 1
-        self._maps = dict(zip(self._elements, range(self._order)))
-        self._inverses = {}
-        for i in self._elements:
-            self._inverses[i] = self.inverse(i)
-        self.update_graph(generators=generators)
+        self._modn = n
+        global maps, imaps
+        maps = dict(zip(self._elements, temp))
+        imaps = dict(zip(temp , self._elements))
+        self.gmaps = dict(zip(self._elements, range(self._order)))
+        self._identity = imaps[1]        
         
-
-    def inverse(self,
-                element):
-        i = element
-        order = 1
-        while(i._number != 1):
-            i*=element
-            order +=1
-        element._order = order
-        return i
+        self._inverses = {self._identity: self._identity}
+        for i in self._elements:
+            inv = i
+            count = 1
+            temp = inv
+            while inv != self._identity:
+                temp = inv
+                inv = inv*i
+                count += 1
+            self._inverses[i] = temp
+            self._inverses[temp] = i
+            i._order = count
+            temp._order = count
+        self.update_graph(generators=generators)
 
     def update_graph(self,
-                     generators):
-        self.generators = generators
+                     generators=['1']):
         self.edges = {}
+        self.generators = generators
         for i in self._elements:
-            self.edges[self._maps[i]] = [self._maps[(i*j)._number] for j in self.generators]
+            self.edges[self.gmaps[i]] = [self.gmaps[i*imaps[int(j)]] for j in self.generators]
         self.vertices = circle(self._order)
+
 
 @cache
 class elementsM(element):
@@ -91,17 +99,11 @@ class elementsM(element):
                  order
                 ):
         self._number = element
-        self._gorder = order
+        self.modn = order
+        self._order = None
 
     def __mul__(self,
                 other):
         if not isinstance(other, element):
-            return elementsM((self._number * other)%self._gorder, self._gorder)
-        return elementsM((self._number * other._number)%self._gorder, self._gorder)
-    
-def test():
-    k = ModuloA(5)
-    for i in k:
-        print(i, end=' ')
-        print(k._inverses[i])
-    print(k.edges)
+            return imaps[(self._number * other)%self.modn]
+        return imaps[(self._number * other._number)%self.modn]

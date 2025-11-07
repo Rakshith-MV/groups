@@ -17,7 +17,7 @@
     {{ form.graph }}
     {% if form.graph.data == 'graph' %}
         {% for i in details.elements %}
-            {% set _ = form.generator.choices.append(i.string) %}
+            {% set _ = form.generator.choices.append(i._string) %}
         {% endfor %}
         <p style="display: inline; color: black; font-size: large;">Choose generator : {{ form.generator }} </p> 
     {% endif %}

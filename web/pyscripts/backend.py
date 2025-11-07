@@ -8,9 +8,9 @@ def create(choice,*,character=None,size=None,gen=None):
     match choice:
         case 'Z':
             if character == '+':
-                group = gp.MnA(size)
+                group = gp.MnA(size,generators=gen)
             else:
-                group = gp.MnM(size)
+                group = gp.MnM(size,generators=gen)
             return {
                 'inverses': group._inverses,
                 'elements': group._elements,

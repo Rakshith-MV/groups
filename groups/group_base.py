@@ -1,3 +1,6 @@
+from re import L
+
+
 class element:
     def __init__(self
                  )->None:
@@ -20,12 +23,26 @@ class element:
             temp*= self
         return temp
 
+    def __eq__(self, value):
+        """
+        Naive as of now
+        """
+        if isinstance(value, element):
+            return self._number == value._number
+        return False
+
+    def __hash__(self):
+        try:
+            return hash(self._number)
+        except:
+            return hash(self._string)
+
     def __int__(self):
         return self._number
     
     def __str__(self):
         return str(self._number)
-
+    
 
 class Group:
     def __init__(self,
@@ -51,6 +68,7 @@ class Group:
             return [i*j for i in self._elements]
         else:
             raise TypeError("Input must be an instance of the element class.")
+
 
     def update_graph(self,
                     generators = []):

@@ -1,5 +1,6 @@
 from functools import cache
 from math import e, pi, sin, cos, sqrt
+from networkx import radius
 import numpy as np
 
 @cache
@@ -30,6 +31,15 @@ def sphere(Npoints:int,
             points.append(j)        
     return points
 
+def cylinder(Npoints:int,
+             cosets:int):
+    points = []
+    for i in range(cosets):
+        points+=circle(Npoints, radius= 1/2, z = 1 + i/cosets)
+    return points
+
+
+
 def polygon(n,
         points:list
         ):
@@ -43,6 +53,5 @@ def polygon(n,
 if __name__=='__main__':
     k = sphere(5,5)
     for i in k:
-        for j in i:
-            print(tuple(j),end=',')
+        print(i,end=',')
         print()

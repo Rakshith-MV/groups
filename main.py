@@ -1,13 +1,10 @@
-import groups as gp
-from itertools import permutations
-from groups.Decorators import _maptostr
+from sympy import gammasimp
+import groups.modulo as gp
+import groups.symmetric as sp
+import groups.dihedralg as dg
 
 
-# print(dir(gp))
-s = gp.modulo.test()
+K = dg.Dihedral(8, generators=['fr0','r1'])
+G = dg.Dihedral(10)
 
-# a =list(map(str, [0,1,2,3,4]))
-# b = list(map(str, [1,2,0,4,3]))
-
-# d = dict(zip(a,b))
-# print(_maptostr(5, d))
+a = sp.symmetric(3,0)

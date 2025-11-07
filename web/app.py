@@ -97,36 +97,27 @@ dn_previous = []
 
 @app.route('/integer/', methods=['GET', 'POST'])
 def integer():
-    print('integer')
     form = integer_mod()  # Define the form here
     global dmod
     if request.method == 'POST':
-        if (form.mod_num != None):
-            try:
-                dmod['data'] = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
-                try:
-                    if dmod['previous'][1] == dmod['data'][1] or dmod['previous'][0] != dmod['data'][0]:
-                        dmod['selected_generators'] = ['1'] if dmod['data'][0] == '+' else []
-                        if dmod['data'][-1] != []:
-                            dmod['selected_generators'] = dmod['data'][-1]
-                    else:
-                        dmod['selected_generators'] = ['1']
-                    
-                except:
-                    dmod['selected_generators'] = ['1']
-                dmod['details'] = create('Z',
-                                    character=str(dmod['data'][0]),
-                                    size=int(dmod['data'][1]),
-                                    gen=dmod['selected_generators'])
-                if dmod['data'][2] == 'table':
-                    colors = [choose() for i in range(dmod['data'][1])]
-                    for i, j in zip(dmod['details']['elements'],colors):
-                        i.color = j 
-                dmod['previous'] = dmod['data'].copy()
-                print(dmod['details'].get('edges', 'No edges found'))
-                return redirect(url_for('integer'),code=302)
-            except ValueError:      
-                flash('Invalid input for mod_num. Please enter a valid number.', 'error')
+        dmod['data'] = [str(request.form['operation']),int(request.form['mod_num']),str(request.form['graph']),request.form.getlist('generator')]
+        if dmod['data'][-1] == [] or dmod['data'][-1] == None:
+            dmod['selected_generators'] = ['1']
+        else:
+            dmod['selected_generators'] = dmod['data'][-1]
+
+        dmod['details'] = create('Z',
+                            character=str(dmod['data'][0]),
+                            size=int(dmod['data'][1]),
+                            gen=dmod['selected_generators'])
+
+        if dmod['data'][2] == 'table':
+            colors = [choose() for i in range(dmod['data'][1])]
+            for i, j in zip(dmod['details']['elements'],colors):
+                i.color = j 
+        dmod['previous'] = dmod['data'].copy()
+        return redirect(url_for('integer'), code=302)
+    
     form.mod_num.data = int(dmod['data'][1])    
     form.operation.data = dmod['data'][0]
     form.graph.data = dmod['data'][2]
@@ -148,38 +139,32 @@ def dihedral():
     global dn_selected_generators    #is this necessary 
     global dn_previous
     if request.method == 'POST':
-        if (form.number != None):
-            # dn_data = [int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
-            try:
-                dn_data = [int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
-                try:
-                    if dn_previous[0] == dn_data[0]:
-                        if dn_data[-1] != []:
-                            dn_selected_generators = dn_data[-1]
-                    else:
-                        dn_selected_generators = ['r^1','f']
-                except:
-                    dn_selected_generators = ['r^1','f']                    
-                dn_details = create('D',
-                                 size= dn_data[0],
-                                 gen=dn_selected_generators)
-                if dn_data[1] == 'table':
-                    colors = [choose() for i in range(len(dn_details['elements']))]
-                    for i,j in zip(dn_details['elements'],colors):
-                        i.color = j
-                dn_previous = dn_data.copy()
-                return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
-            except ValueError:
-                flash('Invalid input for mod_num. Please enter a valid number.', 'error')
+        dn_data = [int(request.form['number']),str(request.form['graph']),request.form.getlist('generator')]
+        try:
+            if dn_previous[0] == dn_data[0]:
+                if dn_data[-1] != []:
+                    dn_selected_generators = dn_data[-1]
+            else:
+                dn_selected_generators = ['r^1','f']
+        except:
+            dn_selected_generators = ['r^1','f']                    
+        dn_details = create('D',
+                            size= dn_data[0],
+                            gen=dn_selected_generators)
+        if dn_data[1] == 'table':
+            colors = [choose() for i in range(len(dn_details['elements']))]
+            for i,j in zip(dn_details['elements'],colors):
+                i.color = j
+        dn_previous = dn_data.copy()
+        return redirect(url_for('dihedral'),code=302)  # Redirect to the same page to see updated data
+
     form.number.data = dn_data[0]
     form.graph.data = dn_data[1]
-
     return render_template('dihedral.html', 
                            title='dihedral-groups',
                              form=form, 
                                data=dn_data,
                                details=dn_details)
-
  
 @app.route(
         '/symmetric/',

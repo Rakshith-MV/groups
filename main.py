@@ -1,10 +1,9 @@
-from sympy import gammasimp
-import groups.modulo as gp
-import groups.symmetric as sp
-import groups.dihedralg as dg
+from groups.symmetric import symmetric as Sn
+from groups.dihedralg import Dihedral as Dn
 
 
-K = dg.Dihedral(8, generators=['fr0','r1'])
-G = dg.Dihedral(10)
-
-a = sp.symmetric(3,0)
+K = Dn(8)
+for i in K.conjugacy_classes():
+    for j in i:
+        print(j,end=', ')
+    print()

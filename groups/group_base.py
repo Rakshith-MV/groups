@@ -74,6 +74,35 @@ class Group:
                     generators = []):
         raise NotImplementedError
 
+    def conjugacy_classes(self
+                          ):
+        elements = set(self._elements)
+        classes = []
+        while elements:
+            temp = self.conjugates(elements.pop())
+            classes.append(temp)
+            elements = elements - temp
+        return classes
+    
+
+    def conjugates(self,
+                   L):
+        """
+        Conjugacy is expanding to the minimum class of elements where they behave commutatively.
+        So, if ab != ba = ca. The question is what are the possibilities of c for a given b, which means aba^-1.
+        """
+        K = set()
+        if type(L) == list:
+            for i in self._elements:
+                G = set()
+                for j in L:
+                    G.add(j*i*self._inverses[j])
+                K.add(frozenset(G))
+        else:
+            for i in self._elements:
+                K.add(i*L*self._inverses[i])
+        return K
+
     def __len__(self) -> int:
         return len(self._order)
     

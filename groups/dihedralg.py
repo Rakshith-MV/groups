@@ -73,7 +73,7 @@ class members(element):
 
     def inverse(self):
         if self.f == 0:
-            return gmaps[(self.f, (self._cycle-self.r-1+1))]
+            return gmaps[(self.f, (self._cycle-self.r))]
         return self
     
     def __mul__(self, other):

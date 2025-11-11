@@ -43,7 +43,7 @@ class symmetric(Group):
         self._inverses = dict(zip(self._elements,[ 0 for i in self._elements]))
         for i in self._inverses:
             if self._inverses[i] == 0:
-                temp  = maps[_maptostr(self.n,dict(zip(i._dict.keys(),i._dict.values())))]
+                temp  = maps[_maptostr(self.n,dict(zip(i._dict.values(),i._dict.keys())))]
                 self._inverses[i] = temp
                 self._inverses[temp] = i
                 i._order = lcm(*[len(i) for i in i._string.split(',')])
@@ -61,12 +61,12 @@ class symmetric(Group):
         self._generators = []
         self.edges = dict(zip(range(self._order), [[] for _ in range(self._order)]))
         self._generators = generators
-        for i in generators:
-            el = maps[i]
-            for j in self._elements:
-                self.edges[gmaps[maps[j._string]]].append(gmaps[j*el])
-        print(self._generators) 
-        print(self.edges)
+        # for i in generators:
+        #     el = maps[i]
+        #     for j in self._elements:
+        #         self.edges[gmaps[maps[j._string]]].append(gmaps[j*el])
+        # print(self._generators) 
+        # print(self.edges)
 
 
     def __hash__(self):

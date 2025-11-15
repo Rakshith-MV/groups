@@ -58,7 +58,7 @@
                     </table>
                 {% endif %}
             </div>
-        {% else %}
+        {% elif data[1] == 'graph' %}
         <div id="graph-container" style="width: 100%; height: 100vh; position: relative; margin-top: 50px;"></div>
         <script>
             const vertices = {{ details.vertices|tojson }};
@@ -79,8 +79,23 @@
                 );
             });
         </script>
-        
-
+        {% else %}
+            <div id="conjugacy_classes">
+                <p style="font-style: bold; font-size: large; font-weight: bolder;">
+                    The Conjugacy classes of the group.
+                </p>
+                {% for i in details.conjugacy_classes %}
+                {% set k = i.pop() %}
+                <p style="background-color: {{ k.color }}; font-size: larger; font-weight: bolder; margin: 0.25rem 0;">
+                    {{ k.__str__() }}
+                    {{ ", " }}
+                    {% for element in i %}
+                    {{ element.__str__() }}
+                    {{ ", " }}
+                    {% endfor %}
+                </p>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 {% endblock %}

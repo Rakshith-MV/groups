@@ -91,17 +91,18 @@ class Group:
         Conjugacy is expanding to the minimum class of elements where they behave commutatively.
         So, if ab != ba = ca. The question is what are the possibilities of c for a given b, which means aba^-1.
         """
-        K = set()
-        if type(L) == list:
+        G = set()
+        try:
+            len(L)
+            L = list(L)
             for i in self._elements:
-                G = set()
                 for j in L:
-                    G.add(j*i*self._inverses[j])
-                K.add(frozenset(G))
-        else:
+                    G.add(i*j*self._inverses[i])
+            return G
+        except:
             for i in self._elements:
-                K.add(i*L*self._inverses[i])
-        return K
+                G.add(i*L*self._inverses[i])
+            return G
 
     def __len__(self) -> int:
         return len(self._order)

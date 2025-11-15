@@ -18,7 +18,8 @@ def create(choice,*,character=None,size=None,gen=None):
                 'vertices': group.vertices,
                 'edges': group.edges,
                 'choices': group.__str__(),
-                'gen':group.generators 
+                'gen':group.generators,
+                'conjugacy_classes':group.conjugacy_classes()
             }
         case 'P':
             if character == 'S_n':
@@ -36,7 +37,8 @@ def create(choice,*,character=None,size=None,gen=None):
                 'vertices': group.vertices,
                 'edges':group.edges,
                 'choices':group.__str__(),
-                'gen':group._generators   
+                'gen':group._generators,
+                'conjugacy_classes':group.conjugacy_classes()
             }
         case 'D':
             group = gp.Dn(2*size,
@@ -48,5 +50,6 @@ def create(choice,*,character=None,size=None,gen=None):
                 'gen': [i.__str__() for i in group._generators],
                 'vertices': group.vertices,
                 'edges':group.edges,
-                'choices':group.__str__()
+                'choices':group.__str__(),
+                'conjugacy_classes':group.conjugacy_classes()
             } 

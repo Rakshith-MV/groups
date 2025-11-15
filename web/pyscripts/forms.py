@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, NumberRange
 from wtforms.widgets import CheckboxInput, ColorInput, ListWidget, TableWidget, Option
 
 class integer_mod(FlaskForm):
-    graph = RadioField('Viz',choices=['graph','table'],default='table')
+    graph = RadioField('Viz',choices=['graph','table','info'],default='table')
     operation = RadioField('Operation',choices=['+','*'],default='+')
     mod_num = IntegerField(validators=[DataRequired(),NumberRange(1,30,'Number b/w 0-30 please!!')],default=None)
     submit = SubmitField('compute')
@@ -24,7 +24,7 @@ class integer_mod(FlaskForm):
 
 
 class sym(FlaskForm):
-    graph = RadioField('Viz',choices=['graph','table'],default='table')
+    graph = RadioField('Viz',choices=['graph','table','info'],default='table')
     operation = RadioField('S/A',choices=['S_n','A_n'],default='S_n')
     number = IntegerField(validators=[DataRequired(), NumberRange(1,5,'Number b/w 1-5 please!!')],default=None)
     submit = SubmitField('compute')
@@ -42,7 +42,7 @@ class sym(FlaskForm):
 
 
 class dn(FlaskForm):
-    graph = RadioField('Viz',choices=['graph','table'],default='table')
+    graph = RadioField('Viz',choices=['graph','table','info'],default='table')
     number = IntegerField(validators=[DataRequired(), NumberRange(1,15,'Number b/w 1-15 please!!')],default=3)
     submit = SubmitField('compute')
     generator = SelectMultipleField("Choose Generator", 

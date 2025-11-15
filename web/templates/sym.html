@@ -59,25 +59,39 @@
                     </table>
                 {% endif %}
             </div>
+        {% elif form.graph.data == 'graph' %}
+            <div id="graph-container" style="width: 100%; height: calc(100% - 50px); position: absolute; top: 50px; left: 0; margin: 0; padding: 0;"></div>
+            <script>
+                const vertices = {{ details.vertices|tojson }};
+                const edges = {{ details.edges|tojson }};
+                const names = {{ details.choices|tojson }};
+                const generator = {{ details.gen|tojson }};
+                document.addEventListener('DOMContentLoaded', function() {
+                    const container = document.getElementById('graph-container');
+                    const rect = container.getBoundingClientRect();
+                    stupid_animate(
+                        container,
+                        vertices,
+                        edges,
+                        names,
+                        generator
+                    );
+                });
+         </script>
+
         {% else %}
-        <div id="graph-container" style="width: 100%; height: calc(100% - 50px); position: absolute; top: 50px; left: 0; margin: 0; padding: 0;"></div>
-        <script>
-            const vertices = {{ details.vertices|tojson }};
-            const edges = {{ details.edges|tojson }};
-            const names = {{ details.choices|tojson }};
-            const generator = {{ details.gen|tojson }};
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('graph-container');
-                const rect = container.getBoundingClientRect();
-                stupid_animate(
-                    container,
-                    vertices,
-                    edges,
-                    names,
-                    generator
-                );
-            });
-        </script>
+            <div id="conjugacy_classes">
+                <p style="font-style: bold; font-size: large; font-weight: bolder;">
+                    The Conjugacy classes of the group.
+                </p>
+                {% for i in details.conjugacy_classes %}
+                    <p style="background-color: 'lightblue'; font-size: larger; font-weight: bolder; margin: 0.25rem 0;">
+                    {% for element in i %}
+                        {{ element.__str__() }}
+                    {% endfor %}
+                </p>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 {% endblock %}

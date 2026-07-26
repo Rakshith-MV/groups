@@ -80,6 +80,21 @@
             });
         </script>
         {% else %}
+            <div id="subgroup_structure">
+                <p style="font-style: bold; font-size: large; font-weight: bolder;">
+                    Subgroup structure.
+                </p>
+                {% if details.subgroups_capped %}
+                <p style="font-style: italic; margin: 0.25rem 0;">
+                    Group is too large to enumerate every subgroup quickly - showing cyclic subgroups only.
+                </p>
+                {% endif %}
+                {% for h in details.subgroups %}
+                <p style="font-size: larger; font-weight: bolder; margin: 0.25rem 0;">
+                    Order {{ h|length }}: {{ h|join(", ") }}
+                </p>
+                {% endfor %}
+            </div>
             <div id="conjugacy_classes">
                 <p style="font-style: bold; font-size: large; font-weight: bolder;">
                     The Conjugacy classes of the group.

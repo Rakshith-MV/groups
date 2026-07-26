@@ -96,9 +96,8 @@ def _maptostr(n,
                 if len(values) == 0:
                     break
                 new_string = values[0]
-        except:
-            assert ValueError ("Doesn't form a proper cycles. ")
-            return ' '   #might have to return None in case of manual input
+        except KeyError:
+            raise ValueError("Doesn't form a proper cycle.")
     return output_str.rstrip(',')
 
 def even(
@@ -133,8 +132,8 @@ def unitary(n:int
             while(mul*i < n):
                 try:
                     m.remove(mul*i)
-                except:
-                    None
+                except ValueError:
+                    pass  # mul*i already removed by an earlier factor
                 mul+=1
     return m
 

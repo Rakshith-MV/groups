@@ -36,17 +36,6 @@ class ModuloA(Group):
             self.edges[maps[i]] = [maps[i*imaps[int(j)]] for j in self.generators]
         self.vertices = circle(self._order)
 
-    def subgroups(self):
-        for i in self._elements:
-            i.cycles = self.cycles(i)
-        
-        K = set(range(self._order))
-        K.subsets
-
-    def lattice(self):
-        ...
-
-
 @cache
 class elementsA(element):
     def __init__(self,

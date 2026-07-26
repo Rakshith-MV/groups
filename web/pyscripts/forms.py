@@ -1,4 +1,3 @@
-from tkinter import Widget
 from flask_wtf import FlaskForm
 from wtforms import RadioField, IntegerField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, NumberRange

@@ -1,5 +1,4 @@
 from math import factorial
-from turtle import title
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from pyscripts.colors import choose 
 import os
@@ -66,7 +65,7 @@ groups = [
         "description": "Isomorphisms and Homomorphisms",
         "color": "#1DA1F2",
         "image": "maps.png",
-        "page": "product"
+        "page": "mappings"
     }
 ]
 
@@ -146,8 +145,9 @@ def dihedral():
                     dn_selected_generators = dn_data[-1]
             else:
                 dn_selected_generators = ['r^1','f']
-        except:
-            dn_selected_generators = ['r^1','f']                    
+        except IndexError:
+            # dn_previous is empty on the very first request
+            dn_selected_generators = ['r^1','f']
         dn_details = create('D',
                             size= dn_data[0],
                             gen=dn_selected_generators)
@@ -207,6 +207,14 @@ def symmetric():
 def product():
     return render_template('product.html',
                            title='product-groups')
+
+@app.route(
+        '/mappings/',
+        methods=['GET', 'POST']
+)
+def mappings():
+    return render_template('mappings.html',
+                           title='mappings')
 
 
 if __name__ == '__main__':

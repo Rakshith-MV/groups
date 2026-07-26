@@ -6,9 +6,247 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
 <script src="{{ url_for('static', filename='/script.js') }}"></script>
 <script src="{{ url_for('static', filename='/graphs.js') }}"></script>
+{% endblock %}
 
+{% block left_side %}
+<form method="POST" id="groupForm">
+    <!-- Group 1 -->
+    <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 12px; border-radius: 6px; background-color: #fafafa;">
+        <legend style="font-weight: bold; font-size: 14px; width: auto; padding: 0 5px; margin-bottom: 5px;">Group 1</legend>
+        <div style="margin-bottom: 5px;">
+            <label style="font-size:12px; font-weight:bold;">Type:</label>
+            {{ form.g1_type(style="width: 100%; padding: 3px;", onchange="updateGroupFields(1)") }}
+        </div>
+        <div style="margin-bottom: 5px;" id="g1_op_container">
+            <label style="font-size:12px; font-weight:bold;">Op/Subtype:</label>
+            {{ form.g1_op(style="width: 100%; padding: 3px;") }}
+        </div>
+        <div id="g1_size_container">
+            <label style="font-size:12px; font-weight:bold;" id="g1_size_label">Order (n):</label>
+            {{ form.g1_size(style="width: 100%; padding: 3px;") }}
+        </div>
+    </fieldset>
+
+    <!-- Group 2 -->
+    <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 12px; border-radius: 6px; background-color: #fafafa;">
+        <legend style="font-weight: bold; font-size: 14px; width: auto; padding: 0 5px; margin-bottom: 5px;">Group 2</legend>
+        <div style="margin-bottom: 5px;">
+            <label style="font-size:12px; font-weight:bold;">Type:</label>
+            {{ form.g2_type(style="width: 100%; padding: 3px;", onchange="updateGroupFields(2)") }}
+        </div>
+        <div style="margin-bottom: 5px;" id="g2_op_container">
+            <label style="font-size:12px; font-weight:bold;">Op/Subtype:</label>
+            {{ form.g2_op(style="width: 100%; padding: 3px;") }}
+        </div>
+        <div id="g2_size_container">
+            <label style="font-size:12px; font-weight:bold;" id="g2_size_label">Order (n):</label>
+            {{ form.g2_size(style="width: 100%; padding: 3px;") }}
+        </div>
+    </fieldset>
+
+    <!-- Group 3 -->
+    <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 12px; border-radius: 6px; background-color: #fafafa;">
+        <legend style="font-weight: bold; font-size: 14px; width: auto; padding: 0 5px; margin-bottom: 5px;">Group 3</legend>
+        <div style="margin-bottom: 5px;">
+            <label style="font-size:12px; font-weight:bold;">Type:</label>
+            {{ form.g3_type(style="width: 100%; padding: 3px;", onchange="updateGroupFields(3)") }}
+        </div>
+        <div style="margin-bottom: 5px;" id="g3_op_container">
+            <label style="font-size:12px; font-weight:bold;">Op/Subtype:</label>
+            {{ form.g3_op(style="width: 100%; padding: 3px;") }}
+        </div>
+        <div id="g3_size_container">
+            <label style="font-size:12px; font-weight:bold;" id="g3_size_label">Order (n):</label>
+            {{ form.g3_size(style="width: 100%; padding: 3px;") }}
+        </div>
+    </fieldset>
+
+    <div style="margin-bottom: 10px;">
+        <label style="font-weight:bold;">Visualization:</label><br>
+        {{ form.graph }}
+    </div>
+    
+    {% if form.graph.data == 'graph' %}
+        {% for i in details.elements %}
+            {% set _ = form.generator.choices.append((i.__str__(), i.__str__())) %}
+        {% endfor %}
+        <div style="margin-bottom: 12px;">
+            <label for="GeneratorField" style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 4px;">Choose Generators:</label>
+            {{ form.generator(style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; max-height: 100px;") }}
+            <small style="color: #666; font-size: 11px;">Hold Ctrl/Cmd to select multiple</small>
+        </div>
+    {% endif %}
+    
+    <div style="margin-bottom: 10px;">
+        {{ form.submit(class="btn btn-primary", style="width: 100%; padding: 6px; font-weight: bold; background-color: #1DA1F2; border: none; color: white; border-radius: 4px; cursor: pointer;") }}
+    </div>
+</form>
+
+{% if details and details.subgroups %}
+<div id="subgroupHighlightSection" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
+    <label for="subgroupSelect" style="font-weight: bold; font-size: 13px; color: #333; display: block; margin-bottom: 6px;">Highlight Subgroup:</label>
+    <select id="subgroupSelect" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; background: white; font-size: 13px; font-weight: 500; cursor: pointer;" onchange="onSubgroupSelectChange(this, subgroupsData)">
+        <option value="">None</option>
+        {% for h in details.subgroups %}
+        <option value="{{ loop.index0 }}">Order {{ h.order }}{% if h.normal %} (normal){% endif %}: {{ h.elements|join(", ") }}</option>
+        {% endfor %}
+    </select>
+    <div id="quotientBtnLeftContainer" style="margin-top: 8px;"></div>
+</div>
+{% endif %}
+
+<script>
+    const subgroupsData = {{ (details.subgroups or [])|tojson }};
+    function updateGroupFields(num) {
+        const typeSelect = document.getElementById(`g${num}_type`);
+        const opContainer = document.getElementById(`g${num}_op_container`);
+        const opSelect = document.getElementById(`g${num}_op`);
+        const sizeContainer = document.getElementById(`g${num}_size_container`);
+        const sizeLabel = document.getElementById(`g${num}_size_label`);
+        const sizeInput = document.getElementById(`g${num}_size`);
+        
+        if (!typeSelect) return;
+        const val = typeSelect.value;
+        
+        if (val === 'None') {
+            if (opContainer) opContainer.style.display = 'none';
+            if (sizeContainer) sizeContainer.style.display = 'none';
+        } else {
+            if (opContainer) opContainer.style.display = 'block';
+            if (sizeContainer) sizeContainer.style.display = 'block';
+            
+            if (val === 'Z') {
+                if (sizeLabel) sizeLabel.innerText = 'Modulo n:';
+                if (sizeInput) { sizeInput.min = 1; sizeInput.max = 30; }
+                if (opSelect) {
+                    Array.from(opSelect.options).forEach(opt => {
+                        opt.disabled = (opt.value !== '+' && opt.value !== '*');
+                    });
+                    if (opSelect.value !== '+' && opSelect.value !== '*') {
+                        opSelect.value = '+';
+                    }
+                }
+            } else if (val === 'D') {
+                if (sizeLabel) sizeLabel.innerText = 'Dihedral n:';
+                if (sizeInput) { sizeInput.min = 1; sizeInput.max = 15; }
+                if (opContainer) opContainer.style.display = 'none';
+            } else if (val === 'S') {
+                if (sizeLabel) sizeLabel.innerText = 'Symmetric n:';
+                if (sizeInput) { sizeInput.min = 1; sizeInput.max = 5; }
+                if (opSelect) {
+                    Array.from(opSelect.options).forEach(opt => {
+                        opt.disabled = (opt.value !== 'S_n' && opt.value !== 'A_n');
+                    });
+                    if (opSelect.value !== 'S_n' && opSelect.value !== 'A_n') {
+                        opSelect.value = 'S_n';
+                    }
+                }
+            }
+        }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        updateGroupFields(1);
+        updateGroupFields(2);
+        updateGroupFields(3);
+    });
+</script>
 {% endblock %}
 
 {% block right_side %}
-<p style="font-weight: bolder;">In progress</p>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(category_filter=["error"]) %}
+      {% if messages %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin: 10px; border: 1px solid #f5c6cb;">
+          {% for msg in messages %}
+            <p style="margin: 0;">{{ msg }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div id="right-side-content" style="height: 100vh; position: relative; width: 100%;">
+        <h1 align="center" style="background-color: #f7dada; padding: 10px 0; margin-top: 0; font-family: sans-serif;">
+            {{ data[0] }}
+        </h1> 
+        {% if data[1] == 'table' %}
+            <div id="tableView">
+                <table style="margin-left: auto; margin-right: auto; margin-top: 1rem; border-collapse: collapse;"> 
+                    {% for row in details.cayleys %}
+                    <tr>
+                        {% for element in row %}
+                        <td>
+                            <button data-el="{{ element.__str__() }}" data-color="{{ element.color }}" style="background-color: {{ element.color }}; border: 1px solid #ddd; padding: 6px 10px; font-weight: bold; cursor: pointer; min-width: 45px; transition: background-color 0.15s;" class="element" onclick="showInfoCard(event, '{{ details.inverses[element] }}', '{{ element._order }}')">
+                                {{ element.__str__() }}
+                            </button>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>  
+        {% elif data[1] == 'graph' %}
+            <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; margin: 0; padding: 0; overflow: hidden;"></div>
+            <script>
+                const vertices = {{ details.vertices|tojson }};
+                const edges = {{ details.edges|tojson }};
+                const names = {{ details.choices|tojson }};
+                const generator = {{ details.gen|tojson }};
+                document.addEventListener('DOMContentLoaded', function() {
+                    const container = document.getElementById('graph-container');
+                    stupid_animate(
+                        container,
+                        vertices,
+                        edges,
+                        names,
+                        generator
+                    );
+                });
+            </script> 
+        {% else %}
+            <div id="subgroup_structure" style="padding: 20px; font-family: sans-serif;">
+                <p style="font-style: bold; font-size: large; font-weight: bolder; margin-bottom: 5px;">
+                    Subgroup Lattice (Hasse Diagram)
+                </p>
+                {% if details.subgroups_capped %}
+                <p style="font-style: italic; margin: 0.25rem 0; color: #666;">
+                    Group is too large to enumerate the full subgroup lattice - showing list of cyclic subgroups:
+                </p>
+                {% for h in details.subgroups %}
+                <p style="font-size: 15px; font-weight: bolder; margin: 0.25rem 0;">
+                    Order {{ h.order }}{% if h.normal %} (normal){% endif %}: {{ h.elements|join(", ") }}
+                </p>
+                {% endfor %}
+                {% else %}
+                <p style="font-size: 13px; color: #666; margin-top: 0; margin-bottom: 10px;">
+                    Nodes display subgroup generators. Click any node to view subgroup order, normality, elements, and generators.
+                </p>
+                <div id="subgroup_lattice_container" style="position: relative; width: 100%; min-height: 450px; border: 1px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,0,0,0.05);">
+                    <svg id="subgroup_lattice_svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+                    <div id="subgroup_lattice_nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const subs = {{ (details.subgroups or [])|tojson }};
+                        const covers = {{ (details.covers or {})|tojson }};
+                        drawSubgroupLattice(subs, covers);
+                    });
+                </script>
+                {% endif %}
+            </div>
+            <div id="conjugacy_classes" style="padding: 20px; font-family: sans-serif;">
+                <p style="font-size: large; font-weight: bolder;">
+                    The Conjugacy classes of the group.
+                </p>
+                {% for i in details.conjugacy_classes %}
+                <p style="background-color: lightblue; padding: 8px; font-size: 16px; font-weight: bolder; margin: 0.25rem 0; border-radius: 4px;">
+                {% for element in i %}
+                {{ element.__str__() }}
+                {% if not loop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+                <br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>       
 {% endblock %}

@@ -51,7 +51,27 @@ class Group:
     def __init__(self,
                  order,
                  **kwargs) -> None:
-        self._identity = None
+        self._identity_elem = None
+
+    @property
+    def _identity(self):
+        if getattr(self, '_identity_elem', None) is not None:
+            return self._identity_elem
+        if hasattr(self, '_elements') and self._elements:
+            for el in self._elements:
+                try:
+                    if el * el == el:
+                        self._identity_elem = el
+                        return el
+                except Exception:
+                    pass
+            self._identity_elem = self._elements[0]
+            return self._elements[0]
+        return None
+
+    @_identity.setter
+    def _identity(self, value):
+        self._identity_elem = value
     
     def elements(self
                  ):
@@ -225,8 +245,49 @@ class Group:
                         covers[i].append(j)
         return {'subgroups': subs, 'covers': covers}
 
+    def is_normal(self,
+                  H):
+        """
+        H (an iterable of elements, or a subgroup as returned by
+        subgroups()/cyclic_subgroups()) is normal iff it's closed under
+        conjugation by every element of the group: gHg^-1 = H for all g.
+        """
+        return self.conjugates(set(H)) == set(H)
 
-        return len(self._order)
+    def cosets(self,
+               H,
+               side='left'):
+        """
+        Partition the group into cosets of H.
+
+        side='left'  -> gH cosets
+        side='right' -> Hg cosets
+
+        For a normal subgroup these coincide (as partitions); for a
+        non-normal one they generally don't, which is itself worth surfacing
+        rather than silently picking one side.
+
+        Returns a list of frozensets, each one coset, always including H
+        itself as one of them (the coset of the identity).
+        """
+        H = set(H)
+        remaining = set(self._elements)
+        result = []
+        while remaining:
+            g = next(iter(remaining))
+            if side == 'left':
+                coset = frozenset(g * h for h in H)
+            elif side == 'right':
+                coset = frozenset(h * g for h in H)
+            else:
+                raise ValueError("side must be 'left' or 'right'")
+            result.append(coset)
+            remaining -= coset
+        return result
+
+
+    def __len__(self) -> int:
+        return self._order
     
     def __getitem__(self, key):
         if isinstance(key, int):

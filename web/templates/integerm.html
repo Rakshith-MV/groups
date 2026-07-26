@@ -18,17 +18,51 @@
 <!-- Since the choices are loaded every single time, it's tricky to get the previous selection back!!. The subgroups must be handled differently!! -->
 {% block left_side %}
 <form method="POST" id="groupForm">
-    {{ form.operation }} {{ form.mod_num }}
-    {{ form.graph }}
+    <div style="margin-bottom: 12px;">
+        <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 4px;">Operation:</label>
+        {{ form.operation }}
+    </div>
+
+    <div style="margin-bottom: 12px;">
+        <label for="mod_num" style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 4px;">Modulo n:</label>
+        {{ form.mod_num(style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px;") }}
+    </div>
+
+    <div style="margin-bottom: 12px;">
+        <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 4px;">Visualization:</label>
+        {{ form.graph }}
+    </div>
+
     {% if form.graph.data == 'graph' %}
-    
         {% for i in details.elements %}
             {% set _ = form.generator.choices.append(i.__str__()) %}
         {% endfor %}
-        <p style="display: inline; color: black; font-size: large;">Choose generator : </p> {{ form.generator }}       
+        <div style="margin-bottom: 12px;">
+            <label for="GeneratorField" style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 4px;">Choose Generators:</label>
+            {{ form.generator(style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; max-height: 100px;") }}
+            <small style="color: #666; font-size: 11px;">Hold Ctrl/Cmd to select multiple</small>
+        </div>
     {% endif %}
-    {{ form.submit }}
+
+    {{ form.submit(style="width: 100%; padding: 8px; background-color: #1DA1F2; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;") }}
 </form>
+
+{% if details and details.subgroups %}
+<div id="subgroupHighlightSection" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
+    <label for="subgroupSelect" style="font-weight: bold; font-size: 13px; color: #333; display: block; margin-bottom: 6px;">Highlight Subgroup:</label>
+    <select id="subgroupSelect" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; background: white; font-size: 13px; font-weight: 500; cursor: pointer;" onchange="onSubgroupSelectChange(this, subgroupsData)">
+        <option value="">None</option>
+        {% for h in details.subgroups %}
+        <option value="{{ loop.index0 }}">Order {{ h.order }}{% if h.normal %} (normal){% endif %}: {{ h.elements|join(", ") }}</option>
+        {% endfor %}
+    </select>
+    <div id="quotientBtnLeftContainer" style="margin-top: 8px;"></div>
+</div>
+{% endif %}
+
+<script>
+    const subgroupsData = {{ (details.subgroups or [])|tojson }};
+</script>
 
 {% endblock %}
 
@@ -43,12 +77,12 @@
         {% if form.graph.data == 'table'  %}
             <div id="tableView">
                 {% if data[1] != 0 %}
-                    <table style="margin-left: auto; margin-right: auto;"> 
+                    <table style="margin-left: auto; margin-right: auto; margin-top: 1rem;"> 
                         {% for row in details.cayleys %}
                         <tr>
                             {% for element in row %}
                             <td>    
-                                <button style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ details.inverses[element] }}', '{{ element._order }}')">
+                                <button data-el="{{ element.__str__() }}" data-color="{{ element.color }}" style="background-color: {{ element.color }};" class="element" onclick="showInfoCard(event, '{{ details.inverses[element] }}', '{{ element._order }}')">
                                     {{ element.__str__() }}       
                                 </button>
                             </td>
@@ -58,42 +92,55 @@
                     </table>
                 {% endif %}
             </div>
-        {% elif data[1] == 'graph' %}
-        <div id="graph-container" style="width: 100%; height: 100vh; position: relative; margin-top: 50px;"></div>
-        <script>
-            const vertices = {{ details.vertices|tojson }};
-            const edges = {{ details.edges|tojson }};
-            const names = {{ details.choices|tojson }};
-            
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('graph-container');
-                container.style.width = '100%';  // Changed from 100rem to 100% to match parent
-                container.style.height = '100vh';
-                const rect = container.getBoundingClientRect(); 
-                stupid_animate(
-                    container,
-                    vertices,
-                    edges,
-                    names,
-                    {{ details.gen|tojson }},
-                );
-            });
-        </script>
+        {% elif form.graph.data == 'graph' %}
+            <div id="graph-container" style="width: 100%; height: calc(100% - 60px); position: relative; margin: 0; padding: 0; overflow: hidden;"></div>
+            <script>
+                const vertices = {{ details.vertices|tojson }};
+                const edges = {{ details.edges|tojson }};
+                const names = {{ details.choices|tojson }};
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    const container = document.getElementById('graph-container');
+                    stupid_animate(
+                        container,
+                        vertices,
+                        edges,
+                        names,
+                        {{ details.gen|tojson }},
+                    );
+                });
+            </script>
+
         {% else %}
-            <div id="subgroup_structure">
-                <p style="font-style: bold; font-size: large; font-weight: bolder;">
-                    Subgroup structure.
+            <div id="subgroup_structure" style="padding: 20px; font-family: sans-serif;">
+                <p style="font-style: bold; font-size: large; font-weight: bolder; margin-bottom: 5px;">
+                    Subgroup Lattice (Hasse Diagram)
                 </p>
                 {% if details.subgroups_capped %}
-                <p style="font-style: italic; margin: 0.25rem 0;">
-                    Group is too large to enumerate every subgroup quickly - showing cyclic subgroups only.
+                <p style="font-style: italic; margin: 0.25rem 0; color: #666;">
+                    Group is too large to enumerate the full subgroup lattice - showing list of cyclic subgroups:
                 </p>
-                {% endif %}
                 {% for h in details.subgroups %}
-                <p style="font-size: larger; font-weight: bolder; margin: 0.25rem 0;">
-                    Order {{ h|length }}: {{ h|join(", ") }}
+                <p style="font-size: 15px; font-weight: bolder; margin: 0.25rem 0;">
+                    Order {{ h.order }}{% if h.normal %} (normal){% endif %}: {{ h.elements|join(", ") }}
                 </p>
                 {% endfor %}
+                {% else %}
+                <p style="font-size: 13px; color: #666; margin-top: 0; margin-bottom: 10px;">
+                    Nodes display subgroup generators. Click any node to view subgroup order, normality, elements, and generators.
+                </p>
+                <div id="subgroup_lattice_container" style="position: relative; width: 100%; min-height: 450px; border: 1px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,0,0,0.05);">
+                    <svg id="subgroup_lattice_svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+                    <div id="subgroup_lattice_nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const subs = {{ (details.subgroups or [])|tojson }};
+                        const covers = {{ (details.covers or {})|tojson }};
+                        drawSubgroupLattice(subs, covers);
+                    });
+                </script>
+                {% endif %}
             </div>
             <div id="conjugacy_classes">
                 <p style="font-style: bold; font-size: large; font-weight: bolder;">

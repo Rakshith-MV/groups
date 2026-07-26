@@ -1,14 +1,811 @@
 {% extends "groups_base.html" %}
 {% block header %}
-<title>Mappings</title>
+<title>Group Mappings & Homomorphisms</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/DragControls.js"></script>
 <script src="{{ url_for('static', filename='/script.js') }}"></script>
-<script src="{{ url_for('static', filename='/graphs.js') }}"></script>
+<style>
+    .element-box {
+        display: inline-block;
+        padding: 6px 12px;
+        font-weight: bold;
+        border-radius: 20px;
+        border: 2px solid #ccc;
+        background-color: #fff;
+        cursor: pointer;
+        min-width: 45px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.1s ease, background-color 0.1s ease;
+    }
+    .coset-container {
+        border: 2px dashed #999;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #fcfcfc;
+        margin-bottom: 12px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.02);
+    }
+    .coset-header {
+        font-size: 11px;
+        font-weight: bold;
+        color: #666;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .mapping-arrow-path {
+        transition: stroke-width 0.15s ease, stroke 0.15s ease;
+    }
+    .mapping-arrow-path:hover {
+        stroke-width: 4px !important;
+        cursor: pointer;
+    }
+    .badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        color: white;
+        display: inline-block;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .badge-injective { background-color: #28a745; }
+    .badge-surjective { background-color: #17a2b8; }
+    .badge-bijective { background-color: #007bff; }
 
+    .tab-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background-color: #ffffff;
+        color: #333;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 13px;
+    }
+    .tab-btn.active {
+        background-color: #1DA1F2;
+        border-color: #1DA1F2;
+        color: white;
+        box-shadow: 0 2px 6px rgba(29, 161, 242, 0.3);
+    }
+
+    .codom-table {
+        margin: 15px auto;
+        border-collapse: collapse;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .codom-table td {
+        padding: 8px 12px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        font-weight: bold;
+        font-size: 14px;
+        transition: transform 0.15s ease;
+    }
+    .codom-table td:hover {
+        transform: scale(1.08);
+        z-index: 10;
+        position: relative;
+    }
+</style>
+{% endblock %}
+
+{% block left_side %}
+<form method="POST" id="mappingsForm">
+    <!-- Domain Group Selection -->
+    <fieldset style="border: 1px solid #ccc; padding: 12px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
+        <legend style="font-weight: bold; font-size: 14px; width: auto; padding: 0 5px;">Domain Group G</legend>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size:12px; font-weight:bold;">Type:</label>
+            <select name="dom_type" id="dom_type" style="width: 100%; padding: 4px;" onchange="updateMappingsFields('dom')">
+                <option value="Z" {% if dom_config and dom_config[0] == 'Z' %}selected{% endif %}>Modulo</option>
+                <option value="D" {% if dom_config and dom_config[0] == 'D' %}selected{% endif %}>Dihedral</option>
+                <option value="S" {% if dom_config and dom_config[0] == 'S' %}selected{% endif %}>Symmetric</option>
+            </select>
+        </div>
+        <div style="margin-bottom: 8px;" id="dom_op_container">
+            <label style="font-size:12px; font-weight:bold;">Op/Subtype:</label>
+            <select name="dom_op" id="dom_op" style="width: 100%; padding: 4px;">
+                <option value="+" {% if dom_config and dom_config[1] == '+' %}selected{% endif %}>+</option>
+                <option value="*" {% if dom_config and dom_config[1] == '*' %}selected{% endif %}>*</option>
+                <option value="S_n" {% if dom_config and dom_config[1] == 'S_n' %}selected{% endif %}>S_n</option>
+                <option value="A_n" {% if dom_config and dom_config[1] == 'A_n' %}selected{% endif %}>A_n</option>
+            </select>
+        </div>
+        <div id="dom_size_container">
+            <label style="font-size:12px; font-weight:bold;" id="dom_size_label">Order (n):</label>
+            <input type="number" name="dom_size" id="dom_size" value="{% if dom_config %}{{ dom_config[2] }}{% else %}4{% endif %}" min="1" max="30" style="width: 100%; padding: 4px;">
+        </div>
+    </fieldset>
+
+    <!-- Codomain Group Selection -->
+    <fieldset style="border: 1px solid #ccc; padding: 12px; margin-bottom: 15px; border-radius: 6px; background-color: #fafafa;">
+        <legend style="font-weight: bold; font-size: 14px; width: auto; padding: 0 5px;">Codomain Group H</legend>
+        <div style="margin-bottom: 8px;">
+            <label style="font-size:12px; font-weight:bold;">Type:</label>
+            <select name="codom_type" id="codom_type" style="width: 100%; padding: 4px;" onchange="updateMappingsFields('codom')">
+                <option value="Z" {% if codom_config and codom_config[0] == 'Z' %}selected{% endif %}>Modulo</option>
+                <option value="D" {% if codom_config and codom_config[0] == 'D' %}selected{% endif %}>Dihedral</option>
+                <option value="S" {% if codom_config and codom_config[0] == 'S' %}selected{% endif %}>Symmetric</option>
+            </select>
+        </div>
+        <div style="margin-bottom: 8px;" id="codom_op_container">
+            <label style="font-size:12px; font-weight:bold;">Op/Subtype:</label>
+            <select name="codom_op" id="codom_op" style="width: 100%; padding: 4px;">
+                <option value="+" {% if codom_config and codom_config[1] == '+' %}selected{% endif %}>+</option>
+                <option value="*" {% if codom_config and codom_config[1] == '*' %}selected{% endif %}>*</option>
+                <option value="S_n" {% if codom_config and codom_config[1] == 'S_n' %}selected{% endif %}>S_n</option>
+                <option value="A_n" {% if codom_config and codom_config[1] == 'A_n' %}selected{% endif %}>A_n</option>
+            </select>
+        </div>
+        <div id="codom_size_container">
+            <label style="font-size:12px; font-weight:bold;" id="codom_size_label">Order (n):</label>
+            <input type="number" name="codom_size" id="codom_size" value="{% if codom_config %}{{ codom_config[2] }}{% else %}2{% endif %}" min="1" max="30" style="width: 100%; padding: 4px;">
+        </div>
+    </fieldset>
+
+    <button type="submit" style="width: 100%; padding: 8px; font-weight: bold; background-color: #1DA1F2; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 14px;">
+        Compute Groups
+    </button>
+</form>
+
+<script>
+function updateMappingsFields(prefix) {
+    const typeSelect = document.getElementById(`${prefix}_type`);
+    const opContainer = document.getElementById(`${prefix}_op_container`);
+    const opSelect = document.getElementById(`${prefix}_op`);
+    const sizeLabel = document.getElementById(`${prefix}_size_label`);
+    const sizeInput = document.getElementById(`${prefix}_size`);
+    
+    if (!typeSelect) return;
+    const val = typeSelect.value;
+    
+    if (opContainer) opContainer.style.display = 'block';
+    
+    if (val === 'Z') {
+        if (sizeLabel) sizeLabel.innerText = 'Modulo n:';
+        if (sizeInput) { sizeInput.min = 1; sizeInput.max = 30; }
+        if (opSelect) {
+            Array.from(opSelect.options).forEach(opt => {
+                opt.disabled = (opt.value !== '+' && opt.value !== '*');
+            });
+            if (opSelect.value !== '+' && opSelect.value !== '*') {
+                opSelect.value = '+';
+            }
+        }
+    } else if (val === 'D') {
+        if (sizeLabel) sizeLabel.innerText = 'Dihedral n:';
+        if (sizeInput) { sizeInput.min = 1; sizeInput.max = 15; }
+        if (opContainer) opContainer.style.display = 'none';
+    } else if (val === 'S') {
+        if (sizeLabel) sizeLabel.innerText = 'Symmetric n:';
+        if (sizeInput) { sizeInput.min = 1; sizeInput.max = 5; }
+        if (opSelect) {
+            Array.from(opSelect.options).forEach(opt => {
+                opt.disabled = (opt.value !== 'S_n' && opt.value !== 'A_n');
+            });
+            if (opSelect.value !== 'S_n' && opSelect.value !== 'A_n') {
+                opSelect.value = 'S_n';
+            }
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    updateMappingsFields('dom');
+    updateMappingsFields('codom');
+});
+</script>
 {% endblock %}
 
 {% block right_side %}
-<p style="font-weight: bolder;">In progress</p>
+    {% with messages = get_flashed_messages(category_filter=["error"]) %}
+      {% if messages %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin: 10px; border: 1px solid #f5c6cb;">
+          {% for msg in messages %}
+            <p style="margin: 0;">{{ msg }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div style="padding: 20px; font-family: sans-serif;">
+        <h2 style="margin-top: 0; background-color: #f7dada; padding: 12px; border-radius: 6px; font-family: sans-serif; font-weight: normal; text-align: center;">
+            Group Homomorphisms & Kernel Mappings
+        </h2>
+        
+        {% if normal_subgroups is not none %}
+            <div style="display: flex; gap: 20px; margin-bottom: 20px; align-items: center; background-color: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;">
+                <div>
+                    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">Select Kernel K (Normal Subgroup of G):</label>
+                    <select id="kernelSelect" style="padding: 5px; border-radius: 4px; min-width: 250px;" onchange="loadHomomorphisms()">
+                        <option value="">-- Choose normal subgroup --</option>
+                        {% for h in normal_subgroups %}
+                        <option value="{{ loop.index0 }}">Order {{ h.order }}: { {{ h.elements|join(", ") }} }</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="homomorphism_selector_div" style="display: none;">
+                    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">Select Homomorphism:</label>
+                    <select id="homomorphismSelect" style="padding: 5px; border-radius: 4px; min-width: 250px;" onchange="renderSelectedHomomorphism()">
+                        <!-- Dynamic choices -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- View Switcher Tabs -->
+            <div id="mapping_tabs_bar" style="display: none; justify-content: center; gap: 10px; margin-bottom: 18px; border-bottom: 2px solid #e0e0e0; padding-bottom: 12px;">
+                <button type="button" id="tab_bipartite" class="tab-btn active" onclick="switchMappingView('bipartite')">
+                    📊 2D Coset Bipartite Map
+                </button>
+                <button type="button" id="tab_codomain_table" class="tab-btn" onclick="switchMappingView('codomain_table')">
+                    🧮 Codomain Cayley Table View
+                </button>
+                <button type="button" id="tab_graph_mapping" class="tab-btn" onclick="switchMappingView('graph_mapping')">
+                    🌐 3D Graph Mapping View
+                </button>
+            </div>
+
+            <!-- Mapping Visualizer Main Container -->
+            <div id="visualizer_container" style="display: none; flex-direction: column; gap: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center; background-color: #f5f5f5; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+                    <span style="font-weight: bold; font-size: 14px;">Classification:</span>
+                    <span id="badge_injective" class="badge badge-injective" style="display: none;">1-1 (Injective)</span>
+                    <span id="badge_surjective" class="badge badge-surjective" style="display: none;">Onto (Surjective)</span>
+                    <span id="badge_bijective" class="badge badge-bijective" style="display: none;">Bijective (Isomorphism)</span>
+                    <span id="badge_normal" class="badge" style="background-color: #6c757d;">Homomorphism</span>
+                </div>
+
+                <!-- VIEW 1: Bipartite Coset Diagram -->
+                <div id="view_bipartite" style="display: flex; gap: 20px; align-items: stretch; position: relative;">
+                    <!-- Left: Domain G -->
+                    <div style="flex: 1; border: 1px solid #ccc; padding: 15px; border-radius: 8px; background-color: #fafafa; display: flex; flex-direction: column; gap: 10px;">
+                        <h4 style="margin: 0; text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #333;">Domain G</h4>
+                        <div id="domain_cosets_container"></div>
+                    </div>
+
+                    <!-- Center: SVG Connector -->
+                    <div style="width: 220px; position: relative;">
+                        <svg id="mapping_svg" style="width: 100%; height: 100%; min-height: 400px; overflow: visible;">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <!-- Right: Codomain H -->
+                    <div style="flex: 1; border: 1px solid #ccc; padding: 15px; border-radius: 8px; background-color: #fafafa; display: flex; flex-direction: column; gap: 10px;">
+                        <h4 style="margin: 0; text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #333;">Codomain H</h4>
+                        <div id="codomain_elements_container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: Codomain Cayley Table View -->
+                <div id="view_codomain_table" style="display: none; flex-direction: column; gap: 15px; background-color: #fafafa; border: 1px solid #ccc; border-radius: 8px; padding: 20px;">
+                    <div id="isomorphism_summary_card" style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #1DA1F2;">First Isomorphism Theorem: G / K ≅ Im(φ) ⊆ H</h4>
+                        <p style="margin: 0; font-size: 13px; color: #555;" id="iso_theorem_text">
+                            Each coset C<sub>i</sub> = g<sub>i</sub>K maps to a single element φ(g<sub>i</sub>) in codomain H. The highlighted cells in H's Cayley table depict how the quotient group G/K embeds inside H.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+                        <!-- Coset Legend Card -->
+                        <div id="coset_legend_card" style="flex: 1; min-width: 250px; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+                            <h5 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 6px;">Domain Cosets G/K & Mapped Images</h5>
+                            <div id="coset_legend_list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+
+                        <!-- Codomain Cayley Table -->
+                        <div style="flex: 2; min-width: 320px; overflow-x: auto; text-align: center;">
+                            <h5 style="margin-top: 0; margin-bottom: 10px;">Codomain H Cayley Table</h5>
+                            <div id="codomain_table_container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: 3D Graph Mapping View -->
+                <div id="view_graph_mapping" style="display: none; flex-direction: column; gap: 10px; background-color: #fafafa; border: 1px solid #ccc; border-radius: 8px; padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid #ddd;">
+                        <span style="font-size: 13px; font-weight: bold; color: #333;">
+                            🌐 3D Dual Cayley Graph Mapping (Left: Domain G | Right: Codomain H)
+                        </span>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="toggle3dLabelsBtn" type="button" style="padding: 4px 10px; border-radius: 6px; border: 1px solid #ccc; background: white; font-weight: bold; font-size: 12px; cursor: pointer;">🏷️ Labels: On</button>
+                            <button id="reset3dCameraBtn" type="button" style="padding: 4px 10px; border-radius: 6px; border: 1px solid #1DA1F2; background: #1DA1F2; color: white; font-weight: bold; font-size: 12px; cursor: pointer;">🔄 Reset View</button>
+                        </div>
+                    </div>
+
+                    <div id="mapping_3d_canvas" style="width: 100%; height: 500px; position: relative; background-color: #f7dada; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);"></div>
+                </div>
+            </div>
+
+            <script>
+                const normalSubgroups = {{ normal_subgroups|tojson }};
+                const domainElements = {{ dom_elements|tojson }};
+                const rangeElements = {{ codom_elements|tojson }};
+                const domCayleys = {{ dom_cayleys|tojson }};
+                const codomCayleys = {{ codom_cayleys|tojson }};
+                const domVertices = {{ dom_vertices|tojson }};
+                const domEdges = {{ dom_edges|tojson }};
+                const codomVertices = {{ codom_vertices|tojson }};
+                const codomEdges = {{ codom_edges|tojson }};
+
+                let activeHomomorphisms = [];
+                let currentMappingView = 'bipartite';
+
+                // Three.js Graph Mapping state
+                let threeScene, threeCamera, threeRenderer, threeOrbit;
+                let threeNodes3D = [];
+                let threeLabels3D = [];
+                let three3dLabelsOn = true;
+
+                function switchMappingView(viewMode) {
+                    currentMappingView = viewMode;
+                    
+                    document.getElementById('tab_bipartite').classList.toggle('active', viewMode === 'bipartite');
+                    document.getElementById('tab_codomain_table').classList.toggle('active', viewMode === 'codomain_table');
+                    document.getElementById('tab_graph_mapping').classList.toggle('active', viewMode === 'graph_mapping');
+
+                    document.getElementById('view_bipartite').style.display = (viewMode === 'bipartite') ? 'flex' : 'none';
+                    document.getElementById('view_codomain_table').style.display = (viewMode === 'codomain_table') ? 'flex' : 'none';
+                    document.getElementById('view_graph_mapping').style.display = (viewMode === 'graph_mapping') ? 'flex' : 'none';
+
+                    if (viewMode === 'bipartite') {
+                        renderSelectedHomomorphism();
+                    } else if (viewMode === 'graph_mapping') {
+                        init3dGraphMapping();
+                    }
+                }
+
+                function loadHomomorphisms() {
+                    const kernelIdx = document.getElementById('kernelSelect').value;
+                    const visualizer = document.getElementById('visualizer_container');
+                    const homSelectDiv = document.getElementById('homomorphism_selector_div');
+                    const tabsBar = document.getElementById('mapping_tabs_bar');
+                    
+                    if (kernelIdx === '') {
+                        visualizer.style.display = 'none';
+                        homSelectDiv.style.display = 'none';
+                        tabsBar.style.display = 'none';
+                        return;
+                    }
+
+                    const payload = {
+                        dom_type: "{{ dom_config[0] }}",
+                        dom_op: "{{ dom_config[1] }}",
+                        dom_size: {{ dom_config[2] }},
+                        codom_type: "{{ codom_config[0] }}",
+                        codom_op: "{{ codom_config[1] }}",
+                        codom_size: {{ codom_config[2] }},
+                        kernel_index: parseInt(kernelIdx, 10)
+                    };
+
+                    fetch('/mappings/api/homomorphisms/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        activeHomomorphisms = data.homomorphisms;
+                        
+                        const select = document.getElementById('homomorphismSelect');
+                        select.innerHTML = '';
+                        
+                        if (activeHomomorphisms.length === 0) {
+                            select.innerHTML = '<option value="">-- No valid mappings found --</option>';
+                            homSelectDiv.style.display = 'block';
+                            visualizer.style.display = 'none';
+                            tabsBar.style.display = 'none';
+                            return;
+                        }
+
+                        activeHomomorphisms.forEach((hom, idx) => {
+                            let typeStr = hom.is_bijective ? 'Isomorphism' : (hom.is_injective ? '1-1' : (hom.is_surjective ? 'Onto' : 'Homomorphism'));
+                            select.innerHTML += `<option value="${idx}">Mapping #${idx+1} (${typeStr})</option>`;
+                        });
+                        
+                        homSelectDiv.style.display = 'block';
+                        tabsBar.style.display = 'flex';
+                        renderSelectedHomomorphism();
+                    });
+                }
+
+                function renderSelectedHomomorphism() {
+                    const idx = document.getElementById('homomorphismSelect').value;
+                    if (idx === '') return;
+
+                    const hom = activeHomomorphisms[parseInt(idx, 10)];
+                    const mapping = hom.mapping;
+
+                    // Update badges
+                    document.getElementById('badge_injective').style.display = hom.is_injective ? 'inline-block' : 'none';
+                    document.getElementById('badge_surjective').style.display = hom.is_surjective ? 'inline-block' : 'none';
+                    document.getElementById('badge_bijective').style.display = hom.is_bijective ? 'inline-block' : 'none';
+
+                    const visualizer = document.getElementById('visualizer_container');
+                    visualizer.style.display = 'flex';
+
+                    const kernelIdx = parseInt(document.getElementById('kernelSelect').value, 10);
+                    const kSub = normalSubgroups[kernelIdx];
+                    const cosets = kSub.cosets;
+
+                    renderBipartiteView(hom, mapping, cosets);
+                    renderCodomainTableView(hom, mapping, cosets);
+                    if (currentMappingView === 'graph_mapping') {
+                        init3dGraphMapping();
+                    }
+                }
+
+                function renderBipartiteView(hom, mapping, cosets) {
+                    const domContainer = document.getElementById('domain_cosets_container');
+                    domContainer.innerHTML = '';
+
+                    cosets.forEach((coset, cosetIdx) => {
+                        const hue = (cosetIdx * 360 / cosets.length) % 360;
+                        const bgColor = `hsl(${hue}, 85%, 96%)`;
+                        const borderClr = `hsl(${hue}, 80%, 45%)`;
+
+                        const cosetDiv = document.createElement('div');
+                        cosetDiv.className = 'coset-container';
+                        cosetDiv.style.backgroundColor = bgColor;
+                        cosetDiv.style.borderColor = borderClr;
+
+                        const header = document.createElement('div');
+                        header.className = 'coset-header';
+                        header.style.color = borderClr;
+                        header.innerText = cosetIdx === 0 ? 'Kernel K' : `Coset C${cosetIdx}`;
+                        cosetDiv.appendChild(header);
+
+                        const elsDiv = document.createElement('div');
+                        elsDiv.style.display = 'flex';
+                        elsDiv.style.gap = '8px';
+                        elsDiv.style.flexWrap = 'wrap';
+
+                        coset.forEach(el => {
+                            const box = document.createElement('div');
+                            box.className = 'element-box';
+                            box.setAttribute('data-domain-el', el);
+                            box.setAttribute('data-color', borderClr);
+                            box.style.borderColor = borderClr;
+                            box.style.color = borderClr;
+                            box.innerText = el;
+                            elsDiv.appendChild(box);
+                        });
+
+                        cosetDiv.appendChild(elsDiv);
+                        domContainer.appendChild(cosetDiv);
+                    });
+
+                    const rangeContainer = document.getElementById('codomain_elements_container');
+                    rangeContainer.innerHTML = '';
+
+                    const grid = document.createElement('div');
+                    grid.style.display = 'flex';
+                    grid.style.flexDirection = 'column';
+                    grid.style.gap = '10px';
+
+                    rangeElements.forEach(el => {
+                        const box = document.createElement('div');
+                        box.className = 'element-box';
+                        box.style.width = '120px';
+                        box.style.textAlign = 'center';
+                        box.setAttribute('data-codomain-el', el);
+                        box.innerText = el;
+                        grid.appendChild(box);
+                    });
+                    rangeContainer.appendChild(grid);
+
+                    requestAnimationFrame(() => {
+                        const svg = document.getElementById('mapping_svg');
+                        const svgRect = svg.getBoundingClientRect();
+                        svg.innerHTML = svg.innerHTML.split('</defs>')[0] + '</defs>';
+
+                        Object.entries(mapping).forEach(([domStr, codomStr]) => {
+                            const domEl = document.querySelector(`[data-domain-el="${domStr}"]`);
+                            const codomEl = document.querySelector(`[data-codomain-el="${codomStr}"]`);
+                            
+                            if (domEl && codomEl) {
+                                const domRect = domEl.getBoundingClientRect();
+                                const codomRect = codomEl.getBoundingClientRect();
+                                
+                                const x1 = 0;
+                                const y1 = domRect.top + domRect.height/2 - svgRect.top;
+                                
+                                const x2 = svgRect.width;
+                                const y2 = codomRect.top + codomRect.height/2 - svgRect.top;
+                                
+                                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                const d = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+                                path.setAttribute('d', d);
+                                
+                                const color = domEl.getAttribute('data-color') || '#999';
+                                path.setAttribute('stroke', color);
+                                path.setAttribute('stroke-width', '2');
+                                path.setAttribute('fill', 'none');
+                                path.setAttribute('marker-end', 'url(#arrow)');
+                                path.setAttribute('class', 'mapping-arrow-path');
+                                
+                                path.onmouseover = () => {
+                                    domEl.style.transform = 'scale(1.1)';
+                                    codomEl.style.transform = 'scale(1.1)';
+                                    codomEl.style.backgroundColor = '#d1ecf1';
+                                };
+                                path.onmouseout = () => {
+                                    domEl.style.transform = 'none';
+                                    codomEl.style.transform = 'none';
+                                    codomEl.style.backgroundColor = '#fff';
+                                };
+                                
+                                svg.appendChild(path);
+                            }
+                        });
+                    });
+                }
+
+                function renderCodomainTableView(hom, mapping, cosets) {
+                    const legendList = document.getElementById('coset_legend_list');
+                    legendList.innerHTML = '';
+
+                    const codomToCosetMap = {};
+
+                    cosets.forEach((coset, cosetIdx) => {
+                        const hue = (cosetIdx * 360 / cosets.length) % 360;
+                        const bgClr = `hsl(${hue}, 85%, 90%)`;
+                        const borderClr = `hsl(${hue}, 80%, 40%)`;
+
+                        const repEl = coset[0];
+                        const targetImg = mapping[repEl] || '?';
+
+                        coset.forEach(el => {
+                            const img = mapping[el];
+                            if (img) {
+                                codomToCosetMap[img] = {
+                                    cosetIdx: cosetIdx,
+                                    cosetLabel: cosetIdx === 0 ? 'K' : `C${cosetIdx}`,
+                                    bgClr: bgClr,
+                                    borderClr: borderClr,
+                                    hue: hue
+                                };
+                            }
+                        });
+
+                        const item = document.createElement('div');
+                        item.style.padding = '8px 12px';
+                        item.style.borderRadius = '6px';
+                        item.style.backgroundColor = bgClr;
+                        item.style.borderLeft = `5px solid ${borderClr}`;
+                        item.style.fontSize = '13px';
+                        item.style.fontWeight = 'bold';
+
+                        const cLabel = cosetIdx === 0 ? 'Kernel K' : `Coset C${cosetIdx}`;
+                        item.innerHTML = `
+                            <span style="color: ${borderClr};">${cLabel}</span> 
+                            <span style="color: #444; font-family: monospace;">{ ${coset.join(', ')} }</span>
+                            <span style="color: #007bff; float: right;">→ φ = ${targetImg}</span>
+                        `;
+                        legendList.appendChild(item);
+                    });
+
+                    const tableContainer = document.getElementById('codomain_table_container');
+                    tableContainer.innerHTML = '';
+
+                    if (!codomCayleys || codomCayleys.length === 0) {
+                        tableContainer.innerHTML = '<p style="color:#666;">No Cayley table available for Codomain H.</p>';
+                        return;
+                    }
+
+                    const table = document.createElement('table');
+                    table.className = 'codom-table';
+
+                    codomCayleys.forEach(row => {
+                        const tr = document.createElement('tr');
+                        row.forEach(cellStr => {
+                            const td = document.createElement('td');
+                            const cosetInfo = codomToCosetMap[cellStr];
+                            if (cosetInfo) {
+                                td.style.backgroundColor = cosetInfo.bgClr;
+                                td.style.borderColor = cosetInfo.borderClr;
+                                td.style.color = cosetInfo.borderClr;
+                                td.innerHTML = `${cellStr} <sub style="font-size:10px; opacity:0.8;">(${cosetInfo.cosetLabel})</sub>`;
+                                td.title = `Element ${cellStr} is the image of domain ${cosetInfo.cosetLabel}`;
+                            } else {
+                                td.style.backgroundColor = '#f2f2f2';
+                                td.style.borderColor = '#ddd';
+                                td.style.color = '#888';
+                                td.innerText = cellStr;
+                                td.title = `Element ${cellStr} is not in the image of φ`;
+                            }
+                            tr.appendChild(td);
+                        });
+                        table.appendChild(tr);
+                    });
+
+                    tableContainer.appendChild(table);
+                }
+
+                function init3dGraphMapping() {
+                    const idx = document.getElementById('homomorphismSelect').value;
+                    if (idx === '') return;
+
+                    const hom = activeHomomorphisms[parseInt(idx, 10)];
+                    const mapping = hom.mapping;
+
+                    const kernelIdx = parseInt(document.getElementById('kernelSelect').value, 10);
+                    const kSub = normalSubgroups[kernelIdx];
+                    const cosets = kSub.cosets;
+
+                    const container = document.getElementById('mapping_3d_canvas');
+                    container.innerHTML = '';
+
+                    threeScene = new THREE.Scene();
+                    threeScene.background = new THREE.Color(0xf7dada);
+
+                    threeCamera = new THREE.PerspectiveCamera(
+                        35,
+                        container.clientWidth / container.clientHeight,
+                        1,
+                        100
+                    );
+                    threeCamera.position.set(0, 0, 8);
+
+                    threeRenderer = new THREE.WebGLRenderer({ antialias: true });
+                    threeRenderer.setSize(container.clientWidth, container.clientHeight);
+                    container.appendChild(threeRenderer.domElement);
+
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                    threeScene.add(ambientLight);
+                    const pointLight = new THREE.PointLight(0xffffff, 0.9);
+                    pointLight.position.set(10, 10, 10);
+                    threeScene.add(pointLight);
+
+                    threeOrbit = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+                    threeOrbit.enableDamping = true;
+
+                    // Compute Coset colors
+                    const elCosetColorMap = {};
+                    const codomCosetColorMap = {};
+                    cosets.forEach((coset, cIdx) => {
+                        const hue = (cIdx * 360 / cosets.length) % 360;
+                        const hexClr = new THREE.Color(`hsl(${hue}, 85%, 50%)`).getHex();
+                        coset.forEach(el => {
+                            elCosetColorMap[el] = hexClr;
+                            if (mapping[el]) {
+                                codomCosetColorMap[mapping[el]] = hexClr;
+                            }
+                        });
+                    });
+
+                    const domNodePositions = {};
+                    const codomNodePositions = {};
+                    threeLabels3D = [];
+
+                    // Render Domain Graph G (Offset X = -2.5)
+                    const loader = new THREE.FontLoader();
+                    const fontUrl = 'https://rawcdn.githack.com/mrdoob/three.js/r128/examples/fonts/helvetiker_bold.typeface.json';
+
+                    loader.load(fontUrl, function(font) {
+                        // Render Domain Nodes
+                        domVertices.forEach((v, i) => {
+                            const name = domainElements[i] || `g${i}`;
+                            const pos = new THREE.Vector3(v[0] - 2.5, v[1], v[2]);
+                            domNodePositions[name] = pos;
+
+                            const hexColor = elCosetColorMap[name] || 0xff69b4;
+                            const geom = new THREE.SphereGeometry(0.12, 32, 32);
+                            const mat = new THREE.MeshStandardMaterial({ color: hexColor, metalness: 0.3, roughness: 0.3 });
+                            const sphere = new THREE.Mesh(geom, mat);
+                            sphere.position.copy(pos);
+                            threeScene.add(sphere);
+
+                            const textGeom = new THREE.TextGeometry(name, { font: font, size: 0.08, height: 0.01 });
+                            const textMat = new THREE.MeshBasicMaterial({ color: "black" });
+                            const textMesh = new THREE.Mesh(textGeom, textMat);
+                            textMesh.position.copy(pos);
+                            textMesh.position.y += 0.14;
+                            threeScene.add(textMesh);
+                            threeLabels3D.push(textMesh);
+                        });
+
+                        // Render Codomain Nodes
+                        codomVertices.forEach((v, i) => {
+                            const name = rangeElements[i] || `h${i}`;
+                            const pos = new THREE.Vector3(v[0] + 2.5, v[1], v[2]);
+                            codomNodePositions[name] = pos;
+
+                            const hexColor = codomCosetColorMap[name] || 0xcccccc;
+                            const geom = new THREE.SphereGeometry(0.14, 32, 32);
+                            const mat = new THREE.MeshStandardMaterial({ color: hexColor, metalness: 0.3, roughness: 0.3 });
+                            const sphere = new THREE.Mesh(geom, mat);
+                            sphere.position.copy(pos);
+                            threeScene.add(sphere);
+
+                            const textGeom = new THREE.TextGeometry(name, { font: font, size: 0.08, height: 0.01 });
+                            const textMat = new THREE.MeshBasicMaterial({ color: "black" });
+                            const textMesh = new THREE.Mesh(textGeom, textMat);
+                            textMesh.position.copy(pos);
+                            textMesh.position.y += 0.16;
+                            threeScene.add(textMesh);
+                            threeLabels3D.push(textMesh);
+                        });
+
+                        // Render Mapping Arrows from G to H
+                        Object.entries(mapping).forEach(([dName, cName]) => {
+                            const p1 = domNodePositions[dName];
+                            const p2 = codomNodePositions[cName];
+
+                            if (p1 && p2) {
+                                const points = [p1, p2];
+                                const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+                                const lineClr = elCosetColorMap[dName] || 0x1DA1F2;
+                                const lineMat = new THREE.LineBasicMaterial({ color: lineClr, linewidth: 2 });
+                                const line = new THREE.Line(lineGeom, lineMat);
+                                threeScene.add(line);
+
+                                const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+                                const arrowPos = new THREE.Vector3().subVectors(p2, dir.clone().multiplyScalar(0.22));
+
+                                const arrowGeom = new THREE.ConeGeometry(0.05, 0.14, 8);
+                                const arrowMat = new THREE.MeshStandardMaterial({ color: lineClr });
+                                const arrow = new THREE.Mesh(arrowGeom, arrowMat);
+                                arrow.position.copy(arrowPos);
+
+                                const quat = new THREE.Quaternion();
+                                quat.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                                arrow.setRotationFromQuaternion(quat);
+                                threeScene.add(arrow);
+                            }
+                        });
+                    });
+
+                    // Setup control button event listeners
+                    document.getElementById('toggle3dLabelsBtn').onclick = () => {
+                        three3dLabelsOn = !three3dLabelsOn;
+                        document.getElementById('toggle3dLabelsBtn').innerText = three3dLabelsOn ? '🏷️ Labels: On' : '🏷️ Labels: Off';
+                        threeLabels3D.forEach(lbl => lbl.visible = three3dLabelsOn);
+                    };
+
+                    document.getElementById('reset3dCameraBtn').onclick = () => {
+                        threeCamera.position.set(0, 0, 8);
+                        threeOrbit.reset();
+                    };
+
+                    function animate3D() {
+                        if (currentMappingView !== 'graph_mapping') return;
+                        requestAnimationFrame(animate3D);
+                        threeOrbit.update();
+
+                        threeLabels3D.forEach(lbl => {
+                            if (lbl) lbl.quaternion.copy(threeCamera.quaternion);
+                        });
+
+                        threeRenderer.render(threeScene, threeCamera);
+                    }
+                    animate3D();
+                }
+
+                window.addEventListener('resize', () => {
+                    if (currentMappingView === 'bipartite') {
+                        renderSelectedHomomorphism();
+                    } else if (currentMappingView === 'graph_mapping' && threeRenderer && threeCamera) {
+                        const container = document.getElementById('mapping_3d_canvas');
+                        if (container) {
+                            threeCamera.aspect = container.clientWidth / container.clientHeight;
+                            threeCamera.updateProjectionMatrix();
+                            threeRenderer.setSize(container.clientWidth, container.clientHeight);
+                        }
+                    }
+                });
+            </script>
+        {% else %}
+            <p style="font-size: 16px; color: #555;">Choose Domain and Codomain groups in the sidebar configuration and click "Compute Groups" to begin.</p>
+        {% endif %}
+    </div>
 {% endblock %}
